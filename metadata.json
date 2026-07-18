@@ -1,0 +1,6 @@
+{
+  "name": "Sawah Jaya Trans",
+  "description": "Layanan travel premium, tur privat, transfer bandara, taksi, dan kemitraan lokal terverifikasi di Indonesia bersama Sawah Jaya Trans (SjT).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
