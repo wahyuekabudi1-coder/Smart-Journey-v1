@@ -603,7 +603,7 @@ export default function TaxiExcelManager({
               <span>EXCEL-DRIVEN TAXI DISPATCH CONTROL</span>
             </h2>
             <p className="text-xs text-neutral-400 mt-1">
-              Portal integrasi data ribuan rute taksi Sawah Jaya secara kilat dengan template spreadsheet Excel multi-sheet.
+              Portal integrasi data ribuan rute taksi Smart Journey secara kilat dengan template spreadsheet Excel multi-sheet.
             </p>
           </div>
           <div className="flex flex-wrap gap-2 shrink-0">
@@ -1252,7 +1252,7 @@ export default function TaxiExcelManager({
                   </div>
                   <h4 className="text-sm font-black uppercase tracking-wider font-mono">Template Berkas Kosong</h4>
                   <p className="text-xs text-neutral-400 leading-relaxed">
-                    Unduh file Excel kosong dengan baris contoh minimal yang sudah dikonfigurasikan dengan format relasional Sawah Jaya. Sangat tepat digunakan sebagai acuan awal sebelum Anda membuat daftar rute Anda sendiri.
+                    Unduh file Excel kosong dengan baris contoh minimal yang sudah dikonfigurasikan dengan format relasional Smart Journey. Sangat tepat digunakan sebagai acuan awal sebelum Anda membuat daftar rute Anda sendiri.
                   </p>
                 </div>
                 <button 

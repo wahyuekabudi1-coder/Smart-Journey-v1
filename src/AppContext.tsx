@@ -16,6 +16,10 @@ interface AppContextProps {
   setPrivacyOpen: (open: boolean) => void;
   isTermsOpen: boolean;
   setTermsOpen: (open: boolean) => void;
+  isComingSoonOpen: boolean;
+  setComingSoonOpen: (open: boolean) => void;
+  comingSoonService: 'tours' | 'airport' | 'taxi' | null;
+  setComingSoonService: (service: 'tours' | 'airport' | 'taxi' | null) => void;
   bookings: Booking[];
   addBooking: (booking: Omit<Booking, 'id' | 'bookingDate' | 'status'>) => Booking;
   updateBookingStatus: (id: string, status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Refunded', paymentStatus?: 'Unpaid' | 'Paid' | 'Pending') => void;
@@ -93,6 +97,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [currency, setCurrency] = useState<'USD' | 'IDR'>('USD');
   const [isPrivacyOpen, setPrivacyOpen] = useState(false);
   const [isTermsOpen, setTermsOpen] = useState(false);
+  const [isComingSoonOpen, setComingSoonOpen] = useState(false);
+  const [comingSoonService, setComingSoonService] = useState<'tours' | 'airport' | 'taxi' | null>(null);
   const [maxBookingsPerDay, setMaxBookingsPerDayState] = useState<number>(() => {
     const stored = localStorage.getItem('smartjourney_max_bookings_per_day');
     return stored ? parseInt(stored, 10) : 5;
@@ -734,40 +740,73 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [rentalLocations, setRentalLocations] = useState<RentalLocation[]>(() => {
     const saved = localStorage.getItem('sj_rental_locations');
+    const seed: RentalLocation[] = [
+      // Malang Service Areas - Zona Nol (Kota Malang & 5 Kecamatan)
+      { id: "loc-mlg-klojen", cityId: "city-malang", name: "Kecamatan Klojen (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 1 },
+      { id: "loc-mlg-blimbing", cityId: "city-malang", name: "Kecamatan Blimbing (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 2 },
+      { id: "loc-mlg-lowokwaru", cityId: "city-malang", name: "Kecamatan Lowokwaru (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 3 },
+      { id: "loc-mlg-sukun", cityId: "city-malang", name: "Kecamatan Sukun (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 4 },
+      { id: "loc-mlg-kedungkandang", cityId: "city-malang", name: "Kecamatan Kedungkandang (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 5 },
+      { id: "loc-mlg-1", cityId: "city-malang", name: "Stasiun Malang (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 6 },
+      { id: "loc-mlg-2", cityId: "city-malang", name: "Bandara Abdul Rachman Saleh (Kota Malang - Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 7 },
+      { id: "loc-mlg-3", cityId: "city-malang", name: "Alun-Alun Kota Malang (Zona Nol)", zone: "Zone 0", status: "Active", displayOrder: 8 },
+      
+      // Malang Service Areas - Zona Satu (Kabupaten Malang & Kota Batu)
+      { id: "loc-mlg-batu", cityId: "city-malang", name: "Kota Batu (Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 9 },
+      { id: "loc-mlg-singosari", cityId: "city-malang", name: "Kecamatan Singosari (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 10 },
+      { id: "loc-mlg-karangploso", cityId: "city-malang", name: "Kecamatan Karangploso (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 11 },
+      { id: "loc-mlg-dau", cityId: "city-malang", name: "Kecamatan Dau (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 12 },
+      { id: "loc-mlg-kepanjen", cityId: "city-malang", name: "Kecamatan Kepanjen (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 13 },
+      { id: "loc-mlg-pakisaji", cityId: "city-malang", name: "Kecamatan Pakisaji (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 14 },
+      { id: "loc-mlg-wagir", cityId: "city-malang", name: "Kecamatan Wagir (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 15 },
+      { id: "loc-mlg-bululawang", cityId: "city-malang", name: "Kecamatan Bululawang (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 16 },
+      { id: "loc-mlg-gondanglegi", cityId: "city-malang", name: "Kecamatan Gondanglegi (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 17 },
+      { id: "loc-mlg-turen", cityId: "city-malang", name: "Kecamatan Turen (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 18 },
+      { id: "loc-mlg-pakis", cityId: "city-malang", name: "Kecamatan Pakis (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 19 },
+      { id: "loc-mlg-tumpang", cityId: "city-malang", name: "Kecamatan Tumpang (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 20 },
+      { id: "loc-mlg-lawang", cityId: "city-malang", name: "Kecamatan Lawang (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 21 },
+      { id: "loc-mlg-pujon", cityId: "city-malang", name: "Kecamatan Pujon (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 22 },
+      { id: "loc-mlg-ngantang", cityId: "city-malang", name: "Kecamatan Ngantang (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 23 },
+      { id: "loc-mlg-kasembon", cityId: "city-malang", name: "Kecamatan Kasembon (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 24 },
+      { id: "loc-mlg-tajinan", cityId: "city-malang", name: "Kecamatan Tajinan (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 25 },
+      { id: "loc-mlg-wajak", cityId: "city-malang", name: "Kecamatan Wajak (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 26 },
+      { id: "loc-mlg-poncokusumo", cityId: "city-malang", name: "Kecamatan Poncokusumo (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 27 },
+      { id: "loc-mlg-jabung", cityId: "city-malang", name: "Kecamatan Jabung (Kabupaten Malang - Zona Satu)", zone: "Zone 1", status: "Active", displayOrder: 28 },
+
+      // Malang Service Areas - Zona Dua (Luar Kota & Kabupaten Tetangga)
+      { id: "loc-mlg-lumajang-reg", cityId: "city-malang", name: "Kabupaten Lumajang (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 29 },
+      { id: "loc-mlg-kediri-reg", cityId: "city-malang", name: "Kabupaten Kediri (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 30 },
+      { id: "loc-mlg-blitar-reg", cityId: "city-malang", name: "Kabupaten Blitar (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 31 },
+      { id: "loc-mlg-probolinggo-reg", cityId: "city-malang", name: "Kabupaten Probolinggo (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 32 },
+      { id: "loc-mlg-pasuruan-reg", cityId: "city-malang", name: "Kabupaten Pasuruan (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 33 },
+      { id: "loc-mlg-bromo", cityId: "city-malang", name: "Gunung Bromo (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 34 },
+      { id: "loc-mlg-tumpaksewu", cityId: "city-malang", name: "Air Terjun Tumpak Sewu (Zona Dua)", zone: "Zone 2", status: "Active", displayOrder: 35 },
+
+      // Bali Service Areas
+      { id: "loc-bali-1", cityId: "city-bali", name: "Ngurah Rai International Airport (DPS)", zone: "Zone 0", status: "Active", displayOrder: 36 },
+      { id: "loc-bali-2", cityId: "city-bali", name: "Kuta / Legian Hotel Area", zone: "Zone 0", status: "Active", displayOrder: 37 },
+      { id: "loc-bali-3", cityId: "city-bali", name: "Seminyak Luxury Villa Area", zone: "Zone 0", status: "Active", displayOrder: 38 },
+      { id: "loc-bali-4", cityId: "city-bali", name: "Sanur Beach & Ferry Harbor", zone: "Zone 0", status: "Active", displayOrder: 39 },
+      { id: "loc-bali-5", cityId: "city-bali", name: "Nusa Dua Resort Complex", zone: "Zone 0", status: "Active", displayOrder: 40 },
+      { id: "loc-bali-6", cityId: "city-bali", name: "Ubud Sacred Monkey Forest / Center", zone: "Zone 1", status: "Active", displayOrder: 41 },
+      { id: "loc-bali-7", cityId: "city-bali", name: "Tanah Lot Sea Temple", zone: "Zone 1", status: "Active", displayOrder: 42 },
+      { id: "loc-bali-8", cityId: "city-bali", name: "Uluwatu Cliff Temple Area", zone: "Zone 1", status: "Active", displayOrder: 43 },
+      { id: "loc-bali-9", cityId: "city-bali", name: "Kintamani Mount Batur View Area", zone: "Zone 2", status: "Active", displayOrder: 44 },
+      { id: "loc-bali-10", cityId: "city-bali", name: "Lovina Beach (North Bali / Dolphin Tour)", zone: "Zone 2", status: "Active", displayOrder: 45 }
+    ];
+
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.length > 0 && 'zone' in parsed[0]) {
-          return parsed;
+          const hasKediri = parsed.some((l: any) => l.id === 'loc-mlg-kediri-reg');
+          if (hasKediri) {
+            return parsed;
+          }
         }
       } catch (e) {}
     }
-    const seed: RentalLocation[] = [
-      // Malang Service Areas
-      { id: "loc-mlg-1", cityId: "city-malang", name: "Malang Station", zone: "Zone 0", status: "Active", displayOrder: 1 },
-      { id: "loc-mlg-2", cityId: "city-malang", name: "Abdul Rachman Saleh Airport", zone: "Zone 0", status: "Active", displayOrder: 2 },
-      { id: "loc-mlg-3", cityId: "city-malang", name: "Alun-Alun Malang", zone: "Zone 0", status: "Active", displayOrder: 3 },
-      { id: "loc-mlg-4", cityId: "city-malang", name: "Batu", zone: "Zone 1", status: "Active", displayOrder: 4 },
-      { id: "loc-mlg-5", cityId: "city-malang", name: "Tumpang", zone: "Zone 1", status: "Active", displayOrder: 5 },
-      { id: "loc-mlg-6", cityId: "city-malang", name: "Lawang", zone: "Zone 1", status: "Active", displayOrder: 6 },
-      { id: "loc-mlg-7", cityId: "city-malang", name: "Pakis", zone: "Zone 1", status: "Active", displayOrder: 7 },
-      { id: "loc-mlg-8", cityId: "city-malang", name: "Pasuruan", zone: "Zone 1", status: "Active", displayOrder: 8 },
-      { id: "loc-mlg-9", cityId: "city-malang", name: "Bromo", zone: "Zone 2", status: "Active", displayOrder: 9 },
-      { id: "loc-mlg-10", cityId: "city-malang", name: "Tumpak Sewu", zone: "Zone 2", status: "Active", displayOrder: 10 },
-      { id: "loc-mlg-11", cityId: "city-malang", name: "Lumajang", zone: "Zone 2", status: "Active", displayOrder: 11 },
 
-      // Bali Service Areas
-      { id: "loc-bali-1", cityId: "city-bali", name: "Ngurah Rai International Airport (DPS)", zone: "Zone 0", status: "Active", displayOrder: 1 },
-      { id: "loc-bali-2", cityId: "city-bali", name: "Kuta / Legian Hotel Area", zone: "Zone 0", status: "Active", displayOrder: 2 },
-      { id: "loc-bali-3", cityId: "city-bali", name: "Seminyak Luxury Villa Area", zone: "Zone 0", status: "Active", displayOrder: 3 },
-      { id: "loc-bali-4", cityId: "city-bali", name: "Sanur Beach & Ferry Harbor", zone: "Zone 0", status: "Active", displayOrder: 4 },
-      { id: "loc-bali-5", cityId: "city-bali", name: "Nusa Dua Resort Complex", zone: "Zone 0", status: "Active", displayOrder: 5 },
-      { id: "loc-bali-6", cityId: "city-bali", name: "Ubud Sacred Monkey Forest / Center", zone: "Zone 1", status: "Active", displayOrder: 6 },
-      { id: "loc-bali-7", cityId: "city-bali", name: "Tanah Lot Sea Temple", zone: "Zone 1", status: "Active", displayOrder: 7 },
-      { id: "loc-bali-8", cityId: "city-bali", name: "Uluwatu Cliff Temple Area", zone: "Zone 1", status: "Active", displayOrder: 8 },
-      { id: "loc-bali-9", cityId: "city-bali", name: "Kintamani Mount Batur View Area", zone: "Zone 2", status: "Active", displayOrder: 9 },
-      { id: "loc-bali-10", cityId: "city-bali", name: "Lovina Beach (North Bali / Dolphin Tour)", zone: "Zone 2", status: "Active", displayOrder: 10 }
-    ];
     localStorage.setItem('sj_rental_locations', JSON.stringify(seed));
     return seed;
   });
@@ -1137,6 +1176,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setPrivacyOpen,
         isTermsOpen,
         setTermsOpen,
+        isComingSoonOpen,
+        setComingSoonOpen,
+        comingSoonService,
+        setComingSoonService,
         bookings,
         addBooking,
         updateBookingStatus,

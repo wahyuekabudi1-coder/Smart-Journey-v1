@@ -118,7 +118,7 @@ export default function CustomerReviewsSection({ serviceType, serviceId, service
               <span className="text-sm font-extrabold text-neutral-800">
                 Daftar Ulasan ({approvedReviews.length})
               </span>
-              <span className="text-xs text-neutral-400 font-mono">PT. Sawah Jaya Trans</span>
+              <span className="text-xs text-neutral-400 font-mono">Smart Journey</span>
             </div>
           </div>
 

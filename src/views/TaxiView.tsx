@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
+import ComingSoonPage from '../components/ComingSoonPage';
 
 // Predefined node coordinates for matching admin configured tariffs
 const cityCoordinates: Record<string, { lat: number, lon: number }> = {
@@ -97,6 +98,8 @@ const POPULAR_ROUTES = [
 ];
 
 export default function TaxiView() {
+  return <ComingSoonPage service="taxi" />;
+
   const { 
     airportRoutes, 
     formatPrice, 

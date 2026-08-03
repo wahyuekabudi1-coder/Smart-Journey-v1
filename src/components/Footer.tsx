@@ -20,7 +20,7 @@ export default function Footer() {
   const { setPage, setPrivacyOpen, setTermsOpen } = useApp();
   const [emailSubscribed, setEmailSubscribed] = useState(false);
   const [email, setEmail] = useState('');
-  const [logoState, setLogoState] = useState<'png' | 'fallback'>('png');
+  const [imageFailed, setImageFailed] = useState(false);
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [copiedWeChat, setCopiedWeChat] = useState(false);
   const [qrImageError, setQrImageError] = useState(false);
@@ -58,7 +58,7 @@ export default function Footer() {
       setPasswordError('');
       setPage('admin');
     } else {
-      setPasswordError('Kunci akses salah. Silakan hubungi tim IT Sawah Jaya Trans.');
+      setPasswordError('Kunci akses salah. Silakan hubungi tim IT Smart Journey.');
     }
   };
 
@@ -83,15 +83,13 @@ export default function Footer() {
           
           {/* Column 1: Brand Info */}
           <div className="space-y-4">
-            <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setPage('home')}>
-              {logoState !== 'fallback' ? (
+            <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => setPage('home')}>
+              {!imageFailed ? (
                 <img 
                   src="/logo.png" 
-                  alt="Logo" 
-                  className="h-10 w-auto max-w-[150px] object-contain hover:scale-105 transition-transform duration-300"
-                  onError={() => {
-                    setLogoState('fallback');
-                  }}
+                  alt="Smart Journey Logo" 
+                  className="h-10 w-auto max-w-[160px] object-contain hover:scale-105 transition-transform duration-300"
+                  onError={() => setImageFailed(true)}
                 />
               ) : (
                 <div className="bg-amber-500 text-neutral-950 p-2 rounded-xl">
@@ -100,7 +98,7 @@ export default function Footer() {
               )}
               <div className="flex flex-col justify-center">
                 <span className="text-lg font-bold tracking-tight text-neutral-900 leading-tight">
-                  Sawah Jaya<span className="text-amber-500"> Trans</span>
+                  Smart<span className="text-amber-500"> Journey</span>
                 </span>
                 <span className="text-[10px] font-semibold text-amber-500 tracking-widest uppercase font-mono mt-0.5 leading-none">
                   Go Beyond.
@@ -108,7 +106,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              Sawah Jaya Trans (SjT) adalah spesialis perjalanan premium dan antar-jemput bandara di Indonesia. Kami menyediakan paket tour wisata, kemitraan lokal terverifikasi, serta transportasi standar concierge 24/7 yang memenuhi tolok ukur internasional.
+              Smart Journey adalah spesialis perjalanan premium dan antar-jemput bandara di Indonesia. Kami menyediakan paket tour wisata, kemitraan lokal terverifikasi, serta transportasi standar concierge 24/7 yang memenuhi tolok ukur internasional.
             </p>
             
             {/* Social Media Links under description */}
@@ -356,7 +354,7 @@ export default function Footer() {
               onClick={handleSecretClick} 
               className="cursor-default select-none"
             >
-              PT. Sawah Jaya Trans
+              Smart Journey
             </span>. All Rights Reserved.
           </div>
         </div>
@@ -377,12 +375,12 @@ export default function Footer() {
                 <div className="w-10 h-10 rounded-xl bg-neutral-50 flex items-center justify-center overflow-hidden border border-neutral-200 shadow-sm p-1">
                   <img 
                     src="/logo.png" 
-                    alt="Sawah Jaya Trans Logo" 
+                    alt="Smart Journey Logo" 
                     className="w-full h-full object-contain"
                   />
                 </div>
                 <div>
-                  <h3 className="font-bold text-neutral-800 text-sm sm:text-base leading-tight">Sawah Jaya Trans</h3>
+                  <h3 className="font-bold text-neutral-800 text-sm sm:text-base leading-tight">Smart Journey</h3>
                   <p className="text-xs text-neutral-500 font-medium">WeChat Contact</p>
                 </div>
               </div>
@@ -545,7 +543,7 @@ export default function Footer() {
               <div className="bg-neutral-950/60 p-3 rounded-2xl border border-neutral-800/50 flex gap-2.5 items-start text-[11px] text-neutral-400 font-medium">
                 <ShieldCheck className="h-4 w-4 text-amber-500/80 shrink-0 mt-0.5" />
                 <span className="leading-relaxed">
-                  Akses dibatasi hanya untuk staf resmi PT Sawah Jaya Trans. Seluruh aktivitas login dipantau oleh server audit.
+                  Akses dibatasi hanya untuk staf resmi Smart Journey. Seluruh aktivitas login dipantau oleh server audit.
                 </span>
               </div>
 

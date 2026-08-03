@@ -148,7 +148,7 @@ export default function MidtransPayView() {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3.5">
               <div>
                 <span className="text-[9px] font-bold text-slate-400 font-mono uppercase tracking-widest block">Merchant</span>
-                <span className="text-sm font-extrabold text-white">Sawah Jaya Group / SmartJourney Trans</span>
+                <span className="text-sm font-extrabold text-white">Smart Journey</span>
               </div>
               <div className="h-px bg-white/10" />
               <div>
@@ -514,7 +514,7 @@ export default function MidtransPayView() {
                 <div className="space-y-2">
                   <h4 className="font-extrabold text-base text-slate-800 animate-pulse uppercase tracking-wider font-mono text-xs">Menghubungkan Midtrans...</h4>
                   <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
-                    Sedang memproses pembayaran secara aman. Sistem sedang mendeteksi dana masuk dan memperbarui database Sawah Jaya Group...
+                    Sedang memproses pembayaran secara aman. Sistem sedang mendeteksi dana masuk dan memperbarui database Smart Journey...
                   </p>
                 </div>
               </div>
@@ -542,7 +542,7 @@ export default function MidtransPayView() {
                 <div className="bg-slate-50 border border-slate-100 p-5 rounded-2xl space-y-3 max-w-md mx-auto text-left">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-400 font-mono">Merchant</span>
-                    <strong className="text-slate-800 font-extrabold">Sawah Jaya Group / SmartJourney</strong>
+                    <strong className="text-slate-800 font-extrabold">Smart Journey</strong>
                   </div>
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-400 font-mono">Booking ID / Order No.</span>

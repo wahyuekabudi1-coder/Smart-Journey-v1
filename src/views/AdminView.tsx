@@ -544,7 +544,7 @@ export default function AdminView() {
               </div>
               <h3 className="font-extrabold text-base uppercase tracking-wider font-mono">PORTAL ADMIN SKELETON</h3>
               <p className={`text-xs ${theme.textSecondary}`}>
-                Akses satu pintu untuk arsitektur visual dasbor dan manajemen bisnis Sawah Jaya Trans.
+                Akses satu pintu untuk arsitektur visual dasbor dan manajemen bisnis Smart Journey.
               </p>
             </div>
 
@@ -597,7 +597,7 @@ export default function AdminView() {
         </main>
 
         <footer className={`border-t ${theme.border} py-4 px-8 text-center text-[10px] text-neutral-600 font-mono`}>
-          PT. Sawah Jaya Trans Sinergi © 2026 • Secure Architecture Hub • Phase 1 Core v1.1
+          Smart Journey © 2026 • Secure Architecture Hub • Phase 1 Core v1.1
         </footer>
       </div>
     );
@@ -2777,7 +2777,7 @@ export default function AdminView() {
           <div className="space-y-6 animate-fade-in text-left">
             <div>
               <h3 className="text-base font-black uppercase tracking-wider font-mono text-amber-500">KEUANGAN LEDGER & ARUS KAS (TOUR PACKAGES)</h3>
-              <p className={`text-xs ${theme.textSecondary}`}>Lacak pendapatan, pengeluaran logistik, fee supir, dan laba bersih operasional PT. Sawah Jaya Trans secara terperinci.</p>
+              <p className={`text-xs ${theme.textSecondary}`}>Lacak pendapatan, pengeluaran logistik, fee supir, dan laba bersih operasional Smart Journey secara terperinci.</p>
             </div>
 
             {/* Ledger Stats Cards */}
@@ -3266,7 +3266,7 @@ export default function AdminView() {
           const printDoc = `
             <html>
               <head>
-                <title>Manifest Wisatawan Sawah Jaya Trans</title>
+                <title>Manifest Wisatawan Smart Journey</title>
                 <style>
                   body { font-family: Arial, sans-serif; padding: 40px; color: #111; }
                   table { width: 100%; border-collapse: collapse; margin-top: 20px; }
@@ -3278,8 +3278,8 @@ export default function AdminView() {
               <body>
                 <div class="header">
                   <div>
-                    <h1 style="margin: 0; font-size: 20px; letter-spacing: 1px;">PT. SAWAH JAYA TRANS SINERGI</h1>
-                    <p style="margin: 5px 0 0; font-size: 11px; color: #444;">Surel: sawahjaya@gmail.com • Portal Operasional Pariwisata Utama</p>
+                    <h1 style="margin: 0; font-size: 20px; letter-spacing: 1px;">SMART JOURNEY</h1>
+                    <p style="margin: 5px 0 0; font-size: 11px; color: #444;">Surel: info@smartjourney.com • Portal Operasional Pariwisata Utama</p>
                   </div>
                   <div style="text-align: right;">
                     <h3 style="margin: 0; font-size: 14px; font-family: monospace;">MANIFEST PERJALANAN</h3>
@@ -3311,7 +3311,7 @@ export default function AdminView() {
                 </table>
 
                 <div class="footer">
-                  Dokumen manifest resmi PT. Sawah Jaya Trans Sinergi. Seluruh data tercatat otomatis pada sistem operasional internal SJT.
+                  Dokumen manifest resmi Smart Journey. Seluruh data tercatat otomatis pada sistem operasional internal SJT.
                 </div>
                 <script>
                   window.onload = function() { window.print(); }
@@ -3452,7 +3452,7 @@ export default function AdminView() {
           <div className="space-y-6 animate-fade-in text-left">
             <h4 className="text-xs font-black uppercase tracking-wider font-mono text-amber-500">Layanan Minor: {activeSubTab.toUpperCase()}</h4>
             <div className={`${theme.card} border rounded-2xl p-6 text-xs ${theme.textSecondary}`}>
-              Detail finansial / ulasan tamu telah tersinkronisasi otomatis dengan server utama PT. Sawah Jaya Trans.
+              Detail finansial / ulasan tamu telah tersinkronisasi otomatis dengan server utama Smart Journey.
             </div>
           </div>
         );
@@ -4475,7 +4475,7 @@ export default function AdminView() {
                 </table>
 
                 <div class="footer">
-                  Dokumen manifest resmi PT. Sawah Jaya Trans Sinergi. Seluruh data tercatat otomatis pada sistem operasional internal SJT.
+                  Dokumen manifest resmi Smart Journey. Seluruh data tercatat otomatis pada sistem operasional internal SJT.
                 </div>
                 <script>
                   window.onload = function() { window.print(); }
@@ -4558,7 +4558,7 @@ export default function AdminView() {
           <div className="space-y-6 animate-fade-in text-left">
             <h4 className="text-xs font-black uppercase tracking-wider font-mono text-amber-500">Layanan Minor: {activeSubTab.toUpperCase()}</h4>
             <div className={`${theme.card} border rounded-2xl p-6 text-xs ${theme.textSecondary}`}>
-              Detail finansial / ulasan tamu telah tersinkronisasi otomatis dengan server utama PT. Sawah Jaya Trans.
+              Detail finansial / ulasan tamu telah tersinkronisasi otomatis dengan server utama Smart Journey.
             </div>
           </div>
         );
@@ -5111,7 +5111,7 @@ export default function AdminView() {
 
                   <div className="space-y-3 pt-2 text-xs">
                     <p className={`text-[11px] ${theme.textSecondary} leading-relaxed`}>
-                      Tentukan jumlah maksimum pesanan terkonfirmasi yang dapat dilayani oleh operasional Sawah Jaya Trans dalam satu hari.
+                      Tentukan jumlah maksimum pesanan terkonfirmasi yang dapat dilayani oleh operasional Smart Journey dalam satu hari.
                     </p>
 
                     <div className="space-y-1 text-left">
@@ -5647,7 +5647,7 @@ export default function AdminView() {
           <div className="space-y-6 animate-fade-in">
             <div>
               <h3 className="text-base font-black uppercase tracking-wider font-mono text-amber-500">ANALYTICS &amp; EXPORT HUB</h3>
-              <p className={`text-xs ${theme.textSecondary}`}>Unduh dan buat kompilasi berkas laporan untuk direktur eksekutif Sawah Jaya Trans.</p>
+              <p className={`text-xs ${theme.textSecondary}`}>Unduh dan buat kompilasi berkas laporan untuk direktur eksekutif Smart Journey.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5779,20 +5779,30 @@ export default function AdminView() {
           <div className="flex items-center justify-between border-b border-neutral-850 border-dashed pb-5">
             {!sidebarCollapsed ? (
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-neutral-950 shadow-md">
-                  <ShieldCheck className="h-5 w-5 stroke-[2.5]" />
-                </div>
+                <img 
+                  src="/logo.png" 
+                  alt="Smart Journey Logo" 
+                  className="h-8 w-auto max-w-[120px] object-contain" 
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
                 <div>
-                  <h1 className="text-xs font-black tracking-widest font-mono">SAWAH JAYA</h1>
+                  <h1 className="text-xs font-black tracking-widest font-mono text-white">SMART JOURNEY</h1>
                   <span className="text-[9px] font-mono bg-amber-500/10 text-amber-400 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20 block mt-0.5">
                     ADMIN GATE v2.0
                   </span>
                 </div>
               </div>
             ) : (
-              <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-neutral-950 mx-auto shadow-md">
-                <ShieldCheck className="h-5 w-5 stroke-[2.5]" />
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="Smart Journey Logo" 
+                className="h-8 w-auto max-w-[36px] object-contain mx-auto"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
             )}
 
             <button 
@@ -6090,7 +6100,7 @@ export default function AdminView() {
                       {[
                         { title: 'Pembayaran Diterima', desc: 'Tour #SJ-TB-9811 telah terbayar lunas via Midtrans.', time: '5m yang lalu' },
                         { title: 'Alokasi Otomatis Supir', desc: 'Supir "Made Wijaya" berhasil dialokasikan ke Rental #SJ-RB-4410.', time: '12m yang lalu' },
-                        { title: 'Pembaruan Katalog Wisata', desc: 'Admin Sawah Jaya memperbarui harga promo tur Uluwatu Sunset.', time: '1h yang lalu' }
+                        { title: 'Pembaruan Katalog Wisata', desc: 'Admin Smart Journey memperbarui harga promo tur Uluwatu Sunset.', time: '1h yang lalu' }
                       ].map((n, i) => (
                         <div key={i} className={`p-2.5 rounded-xl ${theme.innerCard} border space-y-1`}>
                           <h6 className="text-[11px] font-black">{n.title}</h6>
@@ -6129,7 +6139,7 @@ export default function AdminView() {
                     className={`absolute right-0 mt-2 w-56 rounded-2xl border ${theme.card} shadow-2xl p-3 space-y-1.5 z-30`}
                   >
                     <div className="p-2 border-b border-neutral-850 text-xs">
-                      <p className="font-black text-neutral-200">PT. Sawah Jaya Trans</p>
+                      <p className="font-black text-neutral-200">Smart Journey</p>
                       <span className="text-[9px] text-neutral-500 block font-mono">Role: Super Administrator</span>
                     </div>
                     <button 
@@ -6204,7 +6214,7 @@ export default function AdminView() {
                       })()}, Admin Pusat
                     </h2>
                     <p className={`text-xs ${theme.textSecondary}`}>
-                      Selamat datang kembali. Memantau seluruh operasional, kapasitas pemesanan harian, dan verifikasi status pembayaran PT. Sawah Jaya Trans.
+                      Selamat datang kembali. Memantau seluruh operasional, kapasitas pemesanan harian, dan verifikasi status pembayaran Smart Journey.
                     </p>
                   </div>
                   
@@ -6753,7 +6763,7 @@ export default function AdminView() {
                             LATEST OPERATIONAL NOTIFICATIONS
                           </h4>
                           <p className={`text-[11px] ${theme.textSecondary}`}>
-                            Log koordinasi terkini unit pusat Sawah Jaya Trans secara real-time.
+                            Log koordinasi terkini unit pusat Smart Journey secara real-time.
                           </p>
                         </div>
                         <span className="p-2 bg-amber-500/10 text-amber-500 rounded-xl border border-amber-500/20">
@@ -7005,7 +7015,7 @@ export default function AdminView() {
                       <div className="space-y-3">
                         <div className="space-y-1">
                           <label className="text-[10px] font-black text-neutral-500 uppercase">Judul Utama Tagline (Bahasa Indonesia)</label>
-                          <input type="text" defaultValue="Sawah Jaya Trans: Solusi Wisata & Rental Bali Terpercaya" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                          <input type="text" defaultValue="Smart Journey: Solusi Wisata & Rental Bali Terpercaya" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                         </div>
                         <div className="space-y-1">
                           <label className="text-[10px] font-black text-neutral-500 uppercase">Subtagline Deskripsi (Bahasa Inggris)</label>
@@ -7191,7 +7201,7 @@ export default function AdminView() {
                       <div className="space-y-3">
                         <div className="space-y-1">
                           <label className="text-[10px] font-black text-neutral-500 uppercase">Sejarah Singkat Perusahaan</label>
-                          <textarea rows={4} defaultValue="Didirikan tahun 2020, PT. Sawah Jaya Trans didedikasikan untuk memberikan standar kenyamanan dan armada premium di Bali..." className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                          <textarea rows={4} defaultValue="Didirikan tahun 2020, Smart Journey didedikasikan untuk memberikan standar kenyamanan dan armada premium di Bali..." className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                         </div>
                       </div>
                     </div>
@@ -7292,7 +7302,7 @@ export default function AdminView() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
                             <label className="text-[10px] font-black text-neutral-500 uppercase">Nama Lengkap Staff</label>
-                            <input type="text" defaultValue="Sawah Jaya Administrator" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                            <input type="text" defaultValue="Smart Journey Administrator" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-black text-neutral-500 uppercase">ID Karyawan</label>
@@ -7374,7 +7384,7 @@ export default function AdminView() {
 
         {/* --- DYNAMIC METADATA FOOTER --- */}
         <footer className={`border-t ${theme.border} py-4 px-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-neutral-500 font-mono gap-2`}>
-          <span>PT. Sawah Jaya Trans Sinergi © 2026 • Premium Admin Dashboard Framework</span>
+          <span>Smart Journey © 2026 • Premium Admin Dashboard Framework</span>
           <div className="flex gap-4">
             <span>Uptime: 99.98%</span>
             <span>API Status: Operational</span>

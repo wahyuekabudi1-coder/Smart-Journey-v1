@@ -28,8 +28,24 @@ d. Foto Interior VIP Luxury Cabin (Bagian Bawah - About Us):
    • Nama file: cabin.jpg  (atau cabin.png)
    • Gambar ini akan menggantikan foto interior jok kulit mewah di bawah bagian FAQ "About Our Journey".
 
+e. Gambar Hero Banner Slide (Halaman Utama / Home):
+   • Slide 1 (Bromo): bromo.png
+   • Slide 2 (Tumpak Sewu): tumpak-sewu.png
+   • Slide 3 (Kawah Ijen): kawah-ijen.png
+   • Slide 4 (Bali): bali.png
+   • Slide 5 (Nusa Penida): nusa-penida.png
+
 ==================================================
-3. LANGKAH-LANGKAH CARA MENGUNGGAHNYA:
+3. SPESIFIKASI FORMAT, REKOMENDASI UKURAN & DIMENSI:
+==================================================
+• Format Berkas: .jpg / .jpeg (Foto pemandangan) atau .webp (sangat ringan). Gunakan .png transparan khusus untuk Logo.
+• Dimensi Desktop / PC: 1920 x 1080 px (Rasio 16:9, Full HD).
+• Dimensi Tablet: 1280 x 720 px (Rasio 16:9).
+• Dimensi Mobile / HP: 1080 x 720 px atau 800 x 600 px (Fokus objek di bagian tengah/center).
+• Ukuran Berkas (File Size): Disarankan di bawah 300 KB – 500 KB per gambar agar loading website sangat cepat.
+
+==================================================
+4. LANGKAH-LANGKAH CARA MENGUNGGAHNYA:
 ==================================================
 1. Siapkan file gambar di komputer Anda dan ganti namanya terlebih dahulu (misalnya: team.jpg, about-bg.jpg, atau logo.png).
 2. Di panel sebelah kiri AI Studio Anda, temukan daftar file (File Explorer).

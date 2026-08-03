@@ -57,10 +57,10 @@ export default function PrivacyModal() {
             {/* Intro */}
             <div className="bg-slate-950/40 border border-slate-800/50 rounded-2xl p-4 sm:p-5 space-y-3">
               <span className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-extrabold uppercase tracking-widest font-mono">
-                <Sparkles className="h-3 w-3" /> Selamat Datang di Sawah Jaya Trans
+                <Sparkles className="h-3 w-3" /> Selamat Datang di Smart Journey
               </span>
               <p>
-                Privasi Anda sangat penting bagi kami. Kebijakan Privasi ini menjelaskan bagaimana <strong>Sawah Jaya Trans</strong> mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat Anda mengunjungi situs web kami atau menggunakan layanan kami.
+                Privasi Anda sangat penting bagi kami. Kebijakan Privasi ini menjelaskan bagaimana <strong>Smart Journey</strong> mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat Anda mengunjungi situs web kami atau menggunakan layanan kami.
               </p>
               <p className="text-xs text-slate-400 italic">
                 Dengan mengakses situs web kami atau memesan layanan kami, Anda menyetujui praktik-praktik yang dijelaskan dalam Kebijakan Privasi ini.
@@ -74,7 +74,7 @@ export default function PrivacyModal() {
               <div className="space-y-2 border-l-2 border-amber-500 pl-4">
                 <h3 className="text-white font-bold text-base">1. Tentang Kami (About Us)</h3>
                 <p>
-                  Sawah Jaya Trans adalah perusahaan penyedia jasa layanan perjalanan wisata dan transportasi premium yang menawarkan:
+                  Smart Journey adalah perusahaan penyedia jasa layanan perjalanan wisata dan transportasi premium yang menawarkan:
                 </p>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                   {[
@@ -263,7 +263,7 @@ export default function PrivacyModal() {
                 
                 <div className="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-3.5 text-xs">
                   <div className="text-slate-200 font-extrabold text-sm uppercase tracking-wider font-mono text-amber-400">
-                    Sawah Jaya Trans Office
+                    Smart Journey Office
                   </div>
                   <div className="space-y-2.5">
                     <div className="flex items-center gap-2.5 text-slate-300">
@@ -292,7 +292,7 @@ export default function PrivacyModal() {
 
             {/* Ending Message */}
             <div className="text-center pt-4 text-xs text-slate-400 max-w-lg mx-auto leading-relaxed border-t border-slate-800">
-              Terima kasih telah memilih Sawah Jaya Trans. Kami menghargai kepercayaan Anda dan berkomitmen menyediakan pengalaman perjalanan yang aman, nyaman, dan tak terlupakan.
+              Terima kasih telah memilih Smart Journey. Kami menghargai kepercayaan Anda dan berkomitmen menyediakan pengalaman perjalanan yang aman, nyaman, dan tak terlupakan.
             </div>
           </div>
 

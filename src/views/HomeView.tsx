@@ -58,31 +58,31 @@ const WHY_CHOOSE_US = [
 
 const HERO_SLIDES = [
   {
-    image: '/bromo.jpg',
+    image: '/bromo.png',
     fallback: 'https://images.unsplash.com/photo-1588668214407-6eb97207c83a?auto=format&fit=crop&w=1920&q=80',
     title: 'Keindahan Golden Sunrise Gunung Bromo',
     subtitle: 'Saksikan matahari terbit legendaris dengan latar samudera pasir dan kawah aktif yang megah.',
   },
   {
-    image: '/tumpak-sewu.jpg',
+    image: '/tumpak-sewu.png',
     fallback: 'https://images.unsplash.com/photo-1621360841013-c7683c659ec6?auto=format&fit=crop&w=1920&q=80',
     title: 'Keindahan Air Terjun Tumpak Sewu',
     subtitle: 'Petualangan trekking menyusuri tebing megah air terjun seribu berselimut kabut alami.',
   },
   {
-    image: '/kawah-ijen.jpeg',
+    image: '/kawah-ijen.png',
     fallback: 'https://images.unsplash.com/photo-1542224566-6e85f2e6772f?auto=format&fit=crop&w=1920&q=80',
     title: 'Pesona Kawah Ijen Blue Fire',
     subtitle: 'Saksikan nyala api biru belerang yang legendaris serta danau asam hijau toska.',
   },
   {
-    image: '/bali.jpg',
+    image: '/bali.png',
     fallback: 'https://images.unsplash.com/photo-1508873696983-2df519f0397e?auto=format&fit=crop&w=1920&q=80',
     title: 'Surga Tropis Pulau Bali',
     subtitle: 'Eksplorasi pura kuno yang anggun, pantai pasir putih hangat, dan budaya surgawi.',
   },
   {
-    image: '/nusa-penida.jpg',
+    image: '/nusa-penida.png',
     fallback: 'https://images.unsplash.com/photo-1502759683299-cdcd6974244f?auto=format&fit=crop&w=1920&q=80',
     title: 'Eksotis Nusa Penida Kelingking',
     subtitle: 'Nikmati tebing pantai berbentuk T-Rex legendaris dengan air biru laut yang memukau.',
@@ -646,10 +646,10 @@ export default function HomeView() {
 
               {/* Orbital interactive service nodes */}
               {[
-                { id: 'airport', label: 'Antar-Jemput Bandara', icon: <Plane className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'top', hint: 'Layanan 24 Jam' },
-                { id: 'tours', label: 'Tour Wisata', icon: <Compass className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'left', hint: 'Bromo & Ijen' },
-                { id: 'taxi', label: 'Taksi', icon: <Route className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'right', hint: 'Tarif Flat' },
-                { id: 'car-rental', label: 'Rental Mobil', icon: <Car className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'bottom', hint: 'Sopir Handal' },
+                { id: 'airport', label: 'Antar-Jemput Bandara', icon: <Plane className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'top', hint: 'Layanan 24 Jam', isComingSoon: true },
+                { id: 'tours', label: 'Tour Wisata', icon: <Compass className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'left', hint: 'Bromo & Ijen', isComingSoon: false },
+                { id: 'taxi', label: 'Taksi', icon: <Route className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'right', hint: 'Tarif Flat', isComingSoon: true },
+                { id: 'car-rental', label: 'Rental Mobil', icon: <Car className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'bottom', hint: 'Sopir Handal', isComingSoon: true },
               ].map((srv) => {
                 const isActive = activeService === srv.id;
                 
@@ -684,6 +684,12 @@ export default function HomeView() {
                         }`}
                       >
                         {srv.icon}
+                        {srv.isComingSoon && (
+                          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -697,6 +703,9 @@ export default function HomeView() {
                         }`}
                       >
                         {srv.label}
+                        {srv.isComingSoon && (
+                          <span className="block mt-0.5 text-[7px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1 py-0.2 rounded font-mono font-bold uppercase tracking-wider scale-90">Soon</span>
+                        )}
                       </span>
                       <span
                         className={`hidden sm:block text-[8px] font-medium mt-0.5 tracking-wide transition-colors ${

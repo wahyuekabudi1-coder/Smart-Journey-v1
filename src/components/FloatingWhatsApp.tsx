@@ -3,7 +3,7 @@ import { ChevronUp } from 'lucide-react';
 
 export default function FloatingWhatsApp() {
   const phoneNumber = '6285212347289';
-  const defaultMessage = 'Halo Sawah Jaya Trans, saya ingin mengetahui lebih lanjut mengenai layanan dan paket wisata Anda.';
+  const defaultMessage = 'Halo Smart Journey, saya ingin mengetahui lebih lanjut mengenai layanan dan paket wisata Anda.';
   const encodedMessage = encodeURIComponent(defaultMessage);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 

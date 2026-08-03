@@ -8,8 +8,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
+import ComingSoonPage from '../components/ComingSoonPage';
 
 export default function AirportTransferView() {
+  return <ComingSoonPage service="airport" />;
+
   const { 
     formatPrice, 
     airportRoutes, 

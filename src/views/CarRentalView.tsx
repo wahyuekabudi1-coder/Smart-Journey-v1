@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
+import ComingSoonPage from '../components/ComingSoonPage';
 
 interface LocationItem {
   name: string;
@@ -308,6 +309,8 @@ function InteractiveCalendar({
 }
 
 export default function CarRentalView() {
+  return <ComingSoonPage service="car-rental" />;
+
   const { 
     formatPrice, 
     addBooking,
@@ -331,13 +334,28 @@ export default function CarRentalView() {
   // State mimicking Traveloka Car Booking Flow
   const [serviceType, setServiceType] = useState<'without_driver' | 'with_driver'>('with_driver');
   const [selectedRegion, setSelectedRegion] = useState<'Malang' | 'Bali'>('Malang');
+  const [searchStep, setSearchStep] = useState<1 | 2>(1);
   
   const [pickupLocation, setPickupLocation] = useState<string>('');
   const [dropoffLocation, setDropoffLocation] = useState<string>('');
   const [pickupDate, setPickupDate] = useState<string>(getRelativeDateString(1));
   const [pickupTime, setPickupTime] = useState<string>('09:00');
-  const [returnDate, setReturnDate] = useState<string>(getRelativeDateString(2));
-  const [returnTime, setReturnTime] = useState<string>('09:00');
+  const [durationDays, setDurationDays] = useState<number>(1);
+
+  const returnDate = (() => {
+    if (!pickupDate) return getRelativeDateString(2);
+    try {
+      const d = new Date(pickupDate);
+      d.setDate(d.getDate() + durationDays);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    } catch (e) {
+      return getRelativeDateString(2);
+    }
+  })();
+  const returnTime = pickupTime;
   
   const [currentScreen, setCurrentScreen] = useState<'search' | 'results' | 'providers' | 'details' | 'form' | 'review'>('search');
   const [searchError, setSearchError] = useState<string | null>(null);
@@ -356,8 +374,45 @@ export default function CarRentalView() {
   const [dropoffType, setDropoffType] = useState<'office' | 'airport' | 'hotel'>('office');
   const [pickupDetail, setPickupDetail] = useState<string>('');
   const [dropoffDetail, setDropoffDetail] = useState<string>('');
-  const [verificationAccepted, setVerificationAccepted] = useState(false);
+  const [verificationAccepted, setVerificationAccepted] = useState(true);
   const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
+  const [selectedZone, setSelectedZone] = useState<'Zone 0' | 'Zone 1' | 'Zone 2'>('Zone 0');
+
+  // Synchronize selectedZone whenever pickup or dropoff location is manually changed from the dropdown
+  useEffect(() => {
+    const pLoc = getDynamicLocations().find(l => l.name === pickupLocation);
+    const dLoc = getDynamicLocations().find(l => l.name === dropoffLocation);
+    const pZone = pLoc ? pLoc.zone : 'Zone 0';
+    const dZone = dLoc ? dLoc.zone : 'Zone 0';
+    
+    // Choose the maximum zone between pick-up and drop-off to determine the active pricing/routing zone
+    const pZoneNum = parseInt(pZone.replace(/\D/g, ''), 10) || 0;
+    const dZoneNum = parseInt(dZone.replace(/\D/g, ''), 10) || 0;
+    const maxZoneNum = Math.max(pZoneNum, dZoneNum);
+    
+    const maxZoneStr = `Zone ${maxZoneNum}` as 'Zone 0' | 'Zone 1' | 'Zone 2';
+    setSelectedZone(maxZoneStr);
+  }, [pickupLocation, dropoffLocation, selectedRegion]);
+
+  const handleSelectZoneDirectly = (zoneCode: 'Zone 0' | 'Zone 1' | 'Zone 2') => {
+    setSelectedZone(zoneCode);
+    
+    const availableLocs = getDynamicLocations();
+    // Find the first location in this zone
+    const targetLoc = availableLocs.find(l => l.zone === zoneCode);
+    if (targetLoc) {
+      setDropoffLocation(targetLoc.name);
+    }
+    
+    // Also, if pickupLocation is empty or has a zone mismatch, set it to a popular Zone 0 location
+    const currentPLoc = availableLocs.find(l => l.name === pickupLocation);
+    if (!pickupLocation || (currentPLoc && currentPLoc.zone !== 'Zone 0')) {
+      const defaultPickup = availableLocs.find(l => l.zone === 'Zone 0') || availableLocs[0];
+      if (defaultPickup) {
+        setPickupLocation(defaultPickup.name);
+      }
+    }
+  };
 
   // Booking details form
   const [customerName, setCustomerName] = useState<string>('');
@@ -370,16 +425,7 @@ export default function CarRentalView() {
   const [specialRequest, setSpecialRequest] = useState<string>('');
   const [policyAccepted, setPolicyAccepted] = useState<boolean>(false);
 
-  // Dynamic values based on search inputs
-  const durationDays = (() => {
-    if (!pickupDate || !returnDate) return 1;
-    const start = new Date(`${pickupDate}T${pickupTime}`);
-    const end = new Date(`${returnDate}T${returnTime}`);
-    const diff = end.getTime() - start.getTime();
-    if (diff <= 0) return 1;
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return Math.max(1, days);
-  })();
+
 
   const getDynamicLocations = () => {
     const city = rentalCities.find(c => c.name.toLowerCase() === selectedRegion.toLowerCase());
@@ -445,7 +491,7 @@ export default function CarRentalView() {
     return [
       {
         id: 'sawah_jaya',
-        name: 'Sawah Jaya Trans (Official Brand)',
+        name: 'Smart Journey (Official Brand)',
         rating: 4.9,
         reviewsCount: 520,
         tag: 'Recommended Partner',
@@ -544,14 +590,7 @@ export default function CarRentalView() {
     setSearchError(null);
 
     if (!pickupLocation || !dropoffLocation) {
-      setSearchError('Please fill in both pickup and return locations.');
-      return;
-    }
-
-    const start = new Date(`${pickupDate}T${pickupTime}`);
-    const end = new Date(`${returnDate}T${returnTime}`);
-    if (end.getTime() <= start.getTime()) {
-      setSearchError('Return Date/Time must be strictly after Pickup Date/Time.');
+      setSearchError('Harap pilih Lokasi Penjemputan dan Lokasi Tujuan Paling Jauh (Tujuan Wisata).');
       return;
     }
 
@@ -560,7 +599,10 @@ export default function CarRentalView() {
 
   const handleSelectCar = (vehicle: any) => {
     setSelectedVehicle(vehicle);
-    setCurrentScreen('providers');
+    const providers = getProvidersForVehicle(vehicle);
+    const officialProvider = providers.find(p => p.id === 'sawah_jaya') || providers[0];
+    setSelectedProvider(officialProvider);
+    setCurrentScreen('details');
   };
 
   const handleSelectProvider = (provider: any) => {
@@ -569,8 +611,8 @@ export default function CarRentalView() {
   };
 
   const handleProceedToForm = () => {
-    if (!verificationAccepted) {
-      setSearchError('Please accept the rental requirements and verification policies to continue.');
+    if (!pickupDetail.trim()) {
+      setSearchError('Harap lengkapi Alamat Lengkap / Detail Penjemputan untuk melanjutkan.');
       return;
     }
     setSearchError(null);
@@ -608,7 +650,7 @@ export default function CarRentalView() {
 
     const bookingPayload = {
       type: 'rental' as const,
-      serviceName: `Car Rental (With Driver): ${selectedVehicle.name} - ${selectedProvider.name}`,
+      serviceName: `Car Rental: ${selectedVehicle.name} - ${selectedProvider.name}`,
       details: {
         pickupLocation,
         destination: dropoffLocation,
@@ -619,8 +661,8 @@ export default function CarRentalView() {
         vehicleName: selectedVehicle.name,
         withDriver: serviceType === 'with_driver',
         nationality,
-        cityAddress: pickupType === 'hotel' ? pickupDetail : `Pickup at: ${pickupType.toUpperCase()} - ${pickupDetail}`,
-        specialRequest: `Drop-off at: ${dropoffType.toUpperCase()} - ${dropoffDetail}. ${specialRequest}`,
+        cityAddress: `Detail Penjemputan: ${pickupDetail}`,
+        specialRequest: specialRequest || '',
         addOns: addOnList,
         operationalCity: selectedRegion,
         pickupArea: pickupLocation,
@@ -709,17 +751,14 @@ export default function CarRentalView() {
             <span className={currentScreen === 'results' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
               2. Car Model
             </span>
-            <span className={currentScreen === 'providers' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
-              3. Provider
-            </span>
             <span className={currentScreen === 'details' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
-              4. Options
+              3. Options
             </span>
             <span className={currentScreen === 'form' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
-              5. Details Form
+              4. Details Form
             </span>
             <span className={currentScreen === 'review' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
-              6. Confirm &amp; Pay
+              5. Confirm &amp; Pay
             </span>
           </div>
         </div>
@@ -754,136 +793,285 @@ export default function CarRentalView() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSearchSubmit} className="p-6 sm:p-8 space-y-6">
-                  
-                  {/* Row 1: Operational City */}
-                  <div className="space-y-2">
-                    <label className="block text-xs font-black uppercase tracking-widest text-neutral-400">
-                      Operational Territory (Kota Operasional)
-                    </label>
-                    <div className="grid grid-cols-2 gap-4">
-                      {['Malang', 'Bali'].map((city) => (
-                        <div
-                          key={city}
+                <div className="p-6 sm:p-8 space-y-6">
+                  {searchStep === 1 ? (
+                    <motion.div
+                      key="step1"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                      className="space-y-6 animate-fade-in"
+                    >
+                      <div className="text-center space-y-2 py-4">
+                        <span className="text-[10px] text-amber-500 font-extrabold uppercase tracking-widest font-mono">Langkah 1 (Step 1)</span>
+                        <h3 className="text-2xl font-black text-white">Pilih Kota Operasional</h3>
+                        <p className="text-sm text-neutral-400">Silakan pilih kota wilayah operasional untuk layanan sewa mobil dengan sopir.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        {[
+                          { key: 'Malang', title: 'Malang' },
+                          { key: 'Bali', title: 'Bali' }
+                        ].map((city) => (
+                          <div
+                            key={city.key}
+                            onClick={() => {
+                              setSelectedRegion(city.key as any);
+                              setPickupLocation('');
+                              setDropoffLocation('');
+                              setSearchStep(2);
+                            }}
+                            className={`p-6 rounded-2xl border cursor-pointer transition-all hover:scale-[1.01] hover:border-amber-500/50 flex flex-col justify-between h-36 ${
+                              selectedRegion === city.key
+                                ? 'bg-amber-500/10 border-amber-500 text-amber-400 shadow-md ring-1 ring-amber-500/20'
+                                : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:bg-neutral-900'
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <span className="font-black text-xl block text-white">{city.title}</span>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-xs font-black uppercase text-amber-500 font-mono flex items-center justify-end gap-1">
+                                <span>Pilih Kota</span>
+                                <ArrowRight className="h-3 w-3" />
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="pt-4 flex justify-end">
+                        <button
+                          type="button"
                           onClick={() => {
-                            setSelectedRegion(city as any);
                             setPickupLocation('');
                             setDropoffLocation('');
+                            setSearchStep(2);
                           }}
-                          className={`p-4 rounded-2xl border text-center cursor-pointer transition-all ${
-                            selectedRegion === city
-                              ? 'bg-amber-500/10 border-amber-500 text-amber-400 shadow-md'
-                              : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
-                          }`}
+                          className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-3.5 px-8 rounded-xl text-sm uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer"
                         >
-                          <span className="font-extrabold text-sm">{city === 'Malang' ? 'Malang & Batu' : 'Bali Island'}</span>
+                          <span>Lanjutkan (Continue)</span>
+                          <ArrowRight className="h-4 w-4 stroke-[3]" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="step2"
+                      initial={{ opacity: 0, x: 10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      className="space-y-6"
+                    >
+                      {/* Return/Back button & Chosen city indicator */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-neutral-950 border border-neutral-850 p-4.5 rounded-2xl">
+                        <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-center justify-center text-amber-500">
+                            <MapPin className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider block">Kota Operasional Terpilih</span>
+                            <span className="text-sm font-extrabold text-white">{selectedRegion === 'Malang' ? 'Malang' : 'Bali'}</span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                        <button
+                          type="button"
+                          onClick={() => setSearchStep(1)}
+                          className="text-xs font-black uppercase text-amber-500 hover:text-amber-400 transition-colors flex items-center gap-1.5 cursor-pointer bg-neutral-900 border border-neutral-800 px-4 py-2.5 rounded-xl self-start sm:self-auto font-mono"
+                        >
+                          <ArrowLeft className="h-4 w-4" />
+                          <span>Ubah Kota (Change City)</span>
+                        </button>
+                      </div>
 
-                  {/* Row 2: Location Dropdowns */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <SearchableDropdown
-                      id="pickup-dd"
-                      label="Pick-up Location Area"
-                      placeholder="Search and pick pickup area..."
-                      value={pickupLocation}
-                      onChange={setPickupLocation}
-                      options={getDynamicLocations()}
-                      icon={MapPin}
-                    />
-                    <SearchableDropdown
-                      id="return-dd"
-                      label="Return / Drop-off Area"
-                      placeholder="Search and pick drop-off area..."
-                      value={dropoffLocation}
-                      onChange={setDropoffLocation}
-                      options={getDynamicLocations()}
-                      icon={MapPin}
-                    />
-                  </div>
+                      <form onSubmit={handleSearchSubmit} className="space-y-6">
+                        
+                        {/* Interactive Zone Selection Widget */}
+                        <div className="space-y-3 bg-neutral-950 p-5 rounded-2xl border border-neutral-850">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h4 className="text-sm font-black text-white flex items-center gap-1.5">
+                                <Sparkles className="h-4.5 w-4.5 text-amber-500" />
+                                <span>Pilih Zona Wilayah Tujuan Utama (Route Zone)</span>
+                              </h4>
+                              <p className="text-xs text-neutral-400 mt-0.5">
+                                Pilih zona untuk memilih lokasi & mengaktifkan rute tarif otomatis secara instan.
+                              </p>
+                            </div>
+                            <span className="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full font-black uppercase tracking-wider font-mono">
+                              Aktif: {selectedZone === 'Zone 0' ? 'Zona Nol' : selectedZone === 'Zone 1' ? 'Zona Satu' : 'Zona Dua'}
+                            </span>
+                          </div>
 
-                  {/* Row 3: Date & Time parameters */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <InteractiveCalendar
-                      id="p-date"
-                      label="Pick-up Date"
-                      placeholder="Select Date"
-                      value={pickupDate}
-                      onChange={setPickupDate}
-                    />
-                    <div className="space-y-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 pl-1">
-                        Pick-up Time
-                      </label>
-                      <select
-                        value={pickupTime}
-                        onChange={(e) => setPickupTime(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none"
-                      >
-                        {Array.from({ length: 24 }).map((_, hour) => {
-                          const formattedHour = String(hour).padStart(2, '0');
-                          return (
-                            <React.Fragment key={hour}>
-                              <option value={`${formattedHour}:00`}>{formattedHour}:00</option>
-                              <option value={`${formattedHour}:30`}>{formattedHour}:30</option>
-                            </React.Fragment>
-                          );
-                        })}
-                      </select>
-                    </div>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 pt-1">
+                            {[
+                              {
+                                code: 'Zone 0' as const,
+                                label: 'Zona Nol',
+                                sub: selectedRegion === 'Malang' ? 'Kota Malang' : 'Denpasar & Sekitar',
+                                desc: selectedRegion === 'Malang' 
+                                  ? 'Area pusat Kota Malang & 5 Kecamatan lengkap.' 
+                                  : 'Bandara, Kuta, Seminyak, Sanur, Nusa Dua.',
+                                examples: selectedRegion === 'Malang'
+                                  ? 'Stasiun, Alun-Alun, Klojen, Blimbing, Sukun, Lowokwaru, Kedungkandang'
+                                  : 'Bandara Ngurah Rai, Legian, Kuta, Seminyak, Sanur',
+                                color: 'border-emerald-500/20 hover:border-emerald-500/40 bg-emerald-500/5 text-emerald-400',
+                                activeColor: 'ring-2 ring-emerald-500 border-emerald-500 bg-emerald-500/10 text-emerald-300'
+                              },
+                              {
+                                code: 'Zone 1' as const,
+                                label: 'Zona Satu',
+                                sub: selectedRegion === 'Malang' ? 'Kab. Malang & Batu' : 'Ubud & Area Tengah',
+                                desc: selectedRegion === 'Malang' 
+                                  ? 'Wilayah Kabupaten Malang & pariwisata Kota Batu.' 
+                                  : 'Ubud Center, Tanah Lot, Uluwatu Cliff Temple.',
+                                examples: selectedRegion === 'Malang'
+                                  ? 'Batu, Singosari, Karangploso, Dau, Kepanjen, Tumpang, Lawang, Pakis'
+                                  : 'Ubud, Tanah Lot, Uluwatu, Jimbaran, Gianyar',
+                                color: 'border-amber-500/20 hover:border-amber-500/40 bg-amber-500/5 text-amber-400',
+                                activeColor: 'ring-2 ring-amber-500 border-amber-500 bg-amber-500/10 text-amber-300'
+                              },
+                              {
+                                code: 'Zone 2' as const,
+                                label: 'Zona Dua',
+                                sub: selectedRegion === 'Malang' ? 'Kabupaten Tetangga' : 'Bali Utara & Jauh',
+                                desc: selectedRegion === 'Malang' 
+                                  ? 'Luar Malang / Kabupaten tetangga batas terjauh.' 
+                                  : 'Kintamani Batur View, Singaraja, Lovina Beach.',
+                                examples: selectedRegion === 'Malang'
+                                  ? 'Lumajang, Kediri, Blitar, Probolinggo, Pasuruan, Gunung Bromo, Tumpak Sewu'
+                                  : 'Kintamani, Lovina, Gilimanuk, Karangasem, Bedugul',
+                                color: 'border-rose-500/20 hover:border-rose-500/40 bg-rose-500/5 text-rose-400',
+                                activeColor: 'ring-2 ring-rose-500 border-rose-500 bg-rose-500/10 text-rose-300'
+                              }
+                            ].map((z) => {
+                              const isActive = selectedZone === z.code;
+                              return (
+                                <div
+                                  key={z.code}
+                                  onClick={() => handleSelectZoneDirectly(z.code)}
+                                  className={`p-3 rounded-xl border cursor-pointer transition-all flex flex-col justify-between h-40 ${
+                                    isActive ? z.activeColor : `bg-neutral-900/60 border-neutral-800 text-neutral-400 hover:bg-neutral-900`
+                                  }`}
+                                >
+                                  <div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-extrabold text-xs uppercase text-white">{z.label}</span>
+                                      <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded font-mono ${
+                                        isActive ? 'bg-white/20 text-white' : 'bg-neutral-800 text-neutral-400'
+                                      }`}>
+                                        {z.code}
+                                      </span>
+                                    </div>
+                                    <span className="text-[11px] font-bold text-amber-500 block mt-1">{z.sub}</span>
+                                    <p className="text-[10px] text-neutral-400 leading-snug mt-1.5">{z.desc}</p>
+                                  </div>
+                                  <div className="border-t border-neutral-800/60 pt-1.5 mt-1">
+                                    <span className="text-[8px] text-neutral-500 font-bold uppercase block">Contoh Wilayah:</span>
+                                    <span className="text-[9px] text-neutral-300 truncate block font-medium" title={z.examples}>
+                                      {z.examples}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
 
-                    <InteractiveCalendar
-                      id="r-date"
-                      label="Return Date"
-                      placeholder="Select Date"
-                      value={returnDate}
-                      onChange={setReturnDate}
-                    />
-                    <div className="space-y-1">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 pl-1">
-                        Return Time
-                      </label>
-                      <select
-                        value={returnTime}
-                        onChange={(e) => setReturnTime(e.target.value)}
-                        className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none"
-                      >
-                        {Array.from({ length: 24 }).map((_, hour) => {
-                          const formattedHour = String(hour).padStart(2, '0');
-                          return (
-                            <React.Fragment key={hour}>
-                              <option value={`${formattedHour}:00`}>{formattedHour}:00</option>
-                              <option value={`${formattedHour}:30`}>{formattedHour}:30</option>
-                            </React.Fragment>
-                          );
-                        })}
-                      </select>
-                    </div>
-                  </div>
+                        {/* Row 2: Location Dropdowns */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          <SearchableDropdown
+                            id="pickup-dd"
+                            label="Lokasi Penjemputan (Pick-up)"
+                            placeholder="Cari dan pilih lokasi penjemputan..."
+                            value={pickupLocation}
+                            onChange={setPickupLocation}
+                            options={getDynamicLocations()}
+                            icon={MapPin}
+                          />
+                          <SearchableDropdown
+                            id="return-dd"
+                            label="Lokasi Tujuan Paling Jauh (Tujuan Wisata)"
+                            placeholder="Cari dan pilih lokasi tujuan..."
+                            value={dropoffLocation}
+                            onChange={setDropoffLocation}
+                            options={getDynamicLocations()}
+                            icon={MapPin}
+                          />
+                        </div>
 
-                  {/* Helper calculation display */}
-                  <div className="bg-neutral-950 p-4 rounded-2xl flex items-center justify-between text-xs border border-neutral-850">
-                    <span className="text-neutral-400 flex items-center gap-2">
-                      <Info className="h-4 w-4 text-amber-500" />
-                      <span>Total rental calculation:</span>
-                    </span>
-                    <span className="font-extrabold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-md font-mono">
-                      {durationDays} Day{durationDays > 1 ? 's' : ''} rental period
-                    </span>
-                  </div>
+                        {/* Row 3: Date, Time & Duration parameters */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <InteractiveCalendar
+                            id="p-date"
+                            label="Tanggal Mulai Sewa"
+                            placeholder="Pilih Tanggal"
+                            value={pickupDate}
+                            onChange={setPickupDate}
+                          />
+                          <div className="space-y-1">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 pl-1">
+                              Jam Mulai Sewa
+                            </label>
+                            <select
+                              value={pickupTime}
+                              onChange={(e) => setPickupTime(e.target.value)}
+                              className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none"
+                            >
+                              {Array.from({ length: 24 }).map((_, hour) => {
+                                const formattedHour = String(hour).padStart(2, '0');
+                                return (
+                                  <React.Fragment key={hour}>
+                                    <option value={`${formattedHour}:00`}>{formattedHour}:00</option>
+                                    <option value={`${formattedHour}:30`}>{formattedHour}:30</option>
+                                  </React.Fragment>
+                                );
+                              })}
+                            </select>
+                          </div>
 
-                  {/* Submission Button */}
-                  <button
-                    type="submit"
-                    className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-4 rounded-xl text-sm uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <span>Search Available Cars</span>
-                    <ArrowRight className="h-4 w-4 stroke-[3]" />
-                  </button>
+                          <div className="space-y-1">
+                            <label className="block text-xs font-bold uppercase tracking-wider text-neutral-400 pl-1">
+                              Durasi Sewa (Hari)
+                            </label>
+                            <select
+                              value={durationDays}
+                              onChange={(e) => setDurationDays(parseInt(e.target.value, 10))}
+                              className="w-full bg-neutral-900 border border-neutral-800 text-white rounded-xl px-3 py-3 text-sm font-bold focus:outline-none"
+                            >
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 30].map((d) => (
+                                <option key={d} value={d}>
+                                  {d} Hari ({d} Day{d > 1 ? 's' : ''})
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
 
-                </form>
+                        {/* Helper calculation display */}
+                        <div className="bg-neutral-950 p-4 rounded-2xl flex items-center justify-between text-xs border border-neutral-850">
+                          <span className="text-neutral-400 flex items-center gap-2">
+                            <Info className="h-4 w-4 text-amber-500" />
+                            <span>Total rental calculation:</span>
+                          </span>
+                          <span className="font-extrabold text-amber-400 bg-amber-500/10 px-3 py-1 rounded-md font-mono">
+                            {durationDays} Day{durationDays > 1 ? 's' : ''} rental period
+                          </span>
+                        </div>
+
+                        {/* Submission Button */}
+                        <button
+                          type="submit"
+                          className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-4 rounded-xl text-sm uppercase tracking-wider transition-all shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                          <span>Cari Mobil (Search Available Cars)</span>
+                          <ArrowRight className="h-4 w-4 stroke-[3]" />
+                        </button>
+
+                      </form>
+                    </motion.div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
@@ -909,7 +1097,10 @@ export default function CarRentalView() {
                   </p>
                 </div>
                 <button
-                  onClick={() => setCurrentScreen('search')}
+                  onClick={() => {
+                    setSearchStep(1);
+                    setCurrentScreen('search');
+                  }}
                   className="bg-neutral-950 border border-neutral-800 hover:border-neutral-700 hover:text-white text-neutral-300 text-xs font-bold px-4 py-2.5 rounded-xl transition-all cursor-pointer"
                 >
                   Change Search
@@ -966,7 +1157,7 @@ export default function CarRentalView() {
 
               {/* VEHICLE LIST CARDS */}
               {processedVehicles.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="space-y-4">
                   {processedVehicles.map((car) => {
                     const { usd: dailyUSD, idr: dailyIDR } = getVehicleZonePrice(car);
                     const listRateUSD = serviceType === 'without_driver' ? Math.round(dailyUSD * 0.8) : dailyUSD;
@@ -976,66 +1167,72 @@ export default function CarRentalView() {
                     return (
                       <div
                         key={car.id}
-                        className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden hover:border-amber-500/40 transition-all flex flex-col justify-between group"
+                        className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden p-3.5 hover:border-amber-500/30 transition-all flex gap-3.5 sm:gap-6 group items-center relative"
                       >
-                        <div className="relative h-44 w-full bg-neutral-950">
+                        {/* Image Column */}
+                        <div className="relative w-28 h-20 sm:w-48 sm:h-32 flex-shrink-0 bg-neutral-950 rounded-xl overflow-hidden">
                           <img
                             src={car.image}
                             alt={car.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             referrerPolicy="no-referrer"
                           />
-                          <span className="absolute top-4 left-4 bg-amber-500 text-neutral-950 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                          <span className="absolute top-1.5 left-1.5 bg-amber-500 text-neutral-950 text-[8px] sm:text-[9px] font-black px-1.5 sm:px-2 py-0.5 rounded uppercase tracking-wider font-mono">
                             {car.categoryName}
                           </span>
                         </div>
 
-                        <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                          <div>
-                            <div className="flex items-center justify-between">
-                              <h3 className="text-lg font-black text-white">{car.name}</h3>
-                              <span className="text-xs text-amber-400 font-bold flex items-center gap-1">
-                                ⭐ 4.8 <span className="text-[10px] text-neutral-500 font-normal">(120+ reviews)</span>
+                        {/* Details Column */}
+                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6 min-w-0">
+                          <div className="space-y-1 sm:space-y-2 flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                              <h3 className="text-sm sm:text-lg font-black text-white truncate">{car.name}</h3>
+                              <span className="text-[10px] sm:text-xs text-amber-400 font-bold flex items-center gap-1 self-start sm:self-auto">
+                                ⭐ 4.8 <span className="text-[9px] sm:text-[10px] text-neutral-500 font-normal">(120+ reviews)</span>
                               </span>
                             </div>
-                            <p className="text-xs text-neutral-400 mt-1 line-clamp-2">{car.description}</p>
+                            
+                            <p className="hidden md:block text-xs text-neutral-400 line-clamp-1">{car.description}</p>
 
-                            <div className="grid grid-cols-2 gap-x-3 gap-y-2 mt-4 border-t border-b border-neutral-850 py-3 text-[10px] text-neutral-300">
-                              <div className="flex items-center gap-1.5">
-                                <Users className="h-3.5 w-3.5 text-amber-500" />
-                                <span>{car.passengers} Seats</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <Briefcase className="h-3.5 w-3.5 text-amber-500" />
-                                <span>{car.luggage} Bags</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <Settings className="h-3.5 w-3.5 text-amber-500" />
-                                <span>{isAuto ? 'Automatic (A/T)' : 'Manual (M/T)'}</span>
-                              </div>
-                              <div className="flex items-center gap-1.5">
-                                <CheckCircle2 className="h-3.5 w-3.5 text-amber-500" />
-                                <span>Air Conditioning</span>
-                              </div>
+                            {/* Specs list - very compact, like Traveloka */}
+                            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[10px] sm:text-xs text-neutral-300 font-semibold bg-neutral-950/40 p-1.5 sm:p-2 rounded-lg border border-neutral-850/50 w-fit">
+                              <span className="flex items-center gap-1">
+                                <Users className="h-3 w-3 text-amber-500" />
+                                <span>{car.passengers} Kursi</span>
+                              </span>
+                              <span className="text-neutral-700 font-normal">•</span>
+                              <span className="flex items-center gap-1">
+                                <Briefcase className="h-3 w-3 text-amber-500" />
+                                <span>{car.luggage} Bagasi</span>
+                              </span>
+                              <span className="text-neutral-700 font-normal">•</span>
+                              <span className="flex items-center gap-1">
+                                <Settings className="h-3 w-3 text-amber-500" />
+                                <span>{isAuto ? 'Matic' : 'Manual'}</span>
+                              </span>
                             </div>
                           </div>
 
-                          <div className="flex items-end justify-between border-t border-neutral-850 pt-3">
-                            <div>
-                              <span className="text-[9px] text-neutral-500 uppercase font-black font-mono block">Price per day</span>
-                              <span className="text-base font-extrabold text-amber-500 font-mono">
+                          {/* Pricing & Booking Column */}
+                          <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-3 border-t sm:border-t-0 border-neutral-800/60 pt-2.5 sm:pt-0">
+                            <div className="text-left sm:text-right">
+                              <span className="hidden sm:block text-[8px] text-neutral-500 uppercase font-black tracking-wider font-mono">Mulai dari</span>
+                              <span className="text-sm sm:text-xl font-black text-amber-500 font-mono block leading-none">
                                 {formatPrice(listRateUSD, listRateIDR)}
                               </span>
-                              <span className="text-[10px] text-neutral-400 font-semibold block mt-0.5">
-                                Total: {formatPrice(listRateUSD * durationDays, listRateIDR * durationDays)} ({durationDays}d)
+                              <span className="text-[9px] sm:text-xs text-neutral-400 font-semibold block mt-1">
+                                / hari
+                              </span>
+                              <span className="text-[8px] sm:text-[10px] text-neutral-500 block">
+                                Total: {formatPrice(listRateUSD * durationDays, listRateIDR * durationDays)} ({durationDays} Hari)
                               </span>
                             </div>
                             <button
                               onClick={() => handleSelectCar(car)}
-                              className="bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-extrabold px-4 py-2.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
+                              className="bg-amber-500 hover:bg-amber-400 text-neutral-950 text-[10px] sm:text-xs font-black px-4 sm:px-5 py-1.5 sm:py-2.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1"
                             >
-                              <span>Pilih Mobil</span>
-                              <ArrowRight className="h-3.5 w-3.5" />
+                              <span>Pilih</span>
+                              <ArrowRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                             </button>
                           </div>
                         </div>
@@ -1051,116 +1248,7 @@ export default function CarRentalView() {
             </motion.div>
           )}
 
-          {/* SCREEN 3: PROVIDER CHOICE */}
-          {currentScreen === 'providers' && selectedVehicle && (
-            <motion.div
-              key="providers-screen"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="max-w-4xl mx-auto space-y-6"
-            >
-              {/* Return to list button */}
-              <button
-                onClick={() => setCurrentScreen('results')}
-                className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-xs font-bold uppercase font-mono cursor-pointer"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back to Car List</span>
-              </button>
 
-              {/* Selected Car header */}
-              <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-xl">
-                <img
-                  src={selectedVehicle.image}
-                  alt={selectedVehicle.name}
-                  className="w-44 h-28 object-cover rounded-2xl bg-neutral-950"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="space-y-1 text-center md:text-left">
-                  <span className="text-[9px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-2.5 py-0.5 rounded font-bold uppercase tracking-wider font-mono">
-                    {selectedVehicle.categoryName} Class
-                  </span>
-                  <h2 className="text-xl font-black text-white">{selectedVehicle.name}</h2>
-                  <p className="text-xs text-neutral-400">{selectedVehicle.description}</p>
-                  <div className="flex items-center justify-center md:justify-start gap-4 text-xs text-neutral-400 pt-1">
-                    <span>👥 {selectedVehicle.passengers} Seats</span>
-                    <span>💼 {selectedVehicle.luggage} Bags</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Provider List container */}
-              <div className="space-y-4">
-                <div className="border-b border-neutral-850 pb-2">
-                  <h3 className="text-lg font-black text-white">Compare Provider Options</h3>
-                  <p className="text-xs text-neutral-400">Choose the best provider pricing, rating, and cancellation policy for your needs.</p>
-                </div>
-
-                {getProvidersForVehicle(selectedVehicle).map((prov) => (
-                  <div
-                    key={prov.id}
-                    className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 hover:border-neutral-700 transition-all flex flex-col lg:flex-row justify-between gap-6"
-                  >
-                    <div className="space-y-4 flex-1">
-                      <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-extrabold text-white text-base">{prov.name}</span>
-                            <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider ${prov.tagColor}`}>
-                              {prov.tag}
-                            </span>
-                          </div>
-                          <span className="text-xs text-amber-400 font-extrabold flex items-center gap-1.5">
-                            ⭐ {prov.rating}/5 <span className="text-[11px] text-neutral-500 font-normal">({prov.reviewsCount} verified reviews)</span>
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Inclusions list */}
-                      <div className="space-y-1.5 border-t border-neutral-850 pt-3">
-                        <span className="text-[9px] font-black text-neutral-500 uppercase tracking-widest font-mono block">Inclusions</span>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-neutral-300">
-                          {prov.inclusions.map((inc, index) => (
-                            <div key={index} className="flex items-center gap-2">
-                              <Check className="h-4 w-4 text-emerald-500 shrink-0" />
-                              <span>{inc}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Cancellation strip */}
-                      <div className="flex items-center gap-1.5 text-xs text-amber-500 bg-amber-500/5 px-3.5 py-1.5 rounded-xl border border-amber-500/10">
-                        <Shield className="h-4 w-4" />
-                        <span className="font-semibold">Cancellation Policy: {prov.cancellation}</span>
-                      </div>
-                    </div>
-
-                    <div className="lg:border-l border-neutral-850 lg:pl-6 flex flex-col justify-between items-stretch lg:items-end w-full lg:w-48 shrink-0 space-y-4 lg:space-y-0">
-                      <div className="text-left lg:text-right">
-                        <span className="text-[9px] text-neutral-500 font-black uppercase font-mono block">Provider daily rate</span>
-                        <span className="text-xl font-black text-white font-mono">
-                          {formatPrice(prov.priceUSD, prov.priceIDR)}
-                        </span>
-                        <span className="text-xs text-neutral-400 block mt-0.5">
-                          Total for {durationDays}d: {formatPrice(prov.priceUSD * durationDays, prov.priceIDR * durationDays)}
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={() => handleSelectProvider(prov)}
-                        className="bg-amber-500 hover:bg-amber-400 text-neutral-950 font-black py-3 rounded-xl text-xs uppercase tracking-wider transition-colors w-full cursor-pointer flex items-center justify-center gap-1"
-                      >
-                        <span>Pilih Penyedia</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
 
           {/* SCREEN 4: RENTAL DETAILS & REQUIREMENTS */}
           {currentScreen === 'details' && selectedVehicle && selectedProvider && (
@@ -1172,11 +1260,11 @@ export default function CarRentalView() {
               className="max-w-7xl mx-auto space-y-6"
             >
               <button
-                onClick={() => setCurrentScreen('providers')}
+                onClick={() => setCurrentScreen('results')}
                 className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-xs font-bold uppercase font-mono cursor-pointer"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span>Back to Providers</span>
+                <span>Back to Car List</span>
               </button>
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -1184,161 +1272,29 @@ export default function CarRentalView() {
                 {/* Left Form column */}
                 <div className="lg:col-span-7 space-y-6">
                   
-                  {/* Pick-up location method */}
+                  {/* Pick-up location detail */}
                   <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4">
                     <h3 className="text-base font-extrabold text-white flex items-center gap-2">
                       <Building className="h-5 w-5 text-amber-500" />
-                      <span>Pick-up Service Method</span>
+                      <span>Alamat Lengkap / Detail Penjemputan</span>
                     </h3>
                     
-                    <div className="grid grid-cols-3 gap-3 text-xs">
-                      {['office', 'airport', 'hotel'].map((type) => (
-                        <div
-                          key={type}
-                          onClick={() => {
-                            setPickupType(type as any);
-                            setPickupDetail('');
-                          }}
-                          className={`p-3 rounded-xl border text-center cursor-pointer transition-all ${
-                            pickupType === type
-                              ? 'bg-amber-500/10 border-amber-500 text-amber-400'
-                              : 'bg-neutral-950 border-neutral-850 text-neutral-400 hover:border-neutral-700'
-                          }`}
-                        >
-                          <span className="font-bold capitalize">{type}</span>
-                        </div>
-                      ))}
-                    </div>
-
                     <div className="space-y-1.5">
                       <label className="block text-xs font-bold text-neutral-400">
-                        {pickupType === 'office' ? 'Choose Free Office Depot' : pickupType === 'airport' ? 'Airport Flight Code & Terminal' : 'Hotel Delivery Street Address'}
+                        Harap masukkan lokasi penjemputan secara detail (misal: Alamat Rumah, Nama Hotel & Nomor Kamar, Terminal Bandara & Kode Penerbangan, dsb.)
                       </label>
-                      {pickupType === 'office' ? (
-                        <select
-                          value={pickupDetail}
-                          onChange={(e) => setPickupDetail(e.target.value)}
-                          className="w-full bg-neutral-950 border border-neutral-850 text-white rounded-xl px-4 py-3 text-sm font-semibold"
-                        >
-                          <option value="">-- Choose Free Depot --</option>
-                          <option value="Sawah Jaya HQ Main Office">Sawah Jaya HQ Main Office</option>
-                          <option value="Town Center Station Office">Town Center Station Office</option>
-                        </select>
-                      ) : (
-                        <input
-                          type="text"
-                          required
-                          placeholder={pickupType === 'airport' ? 'e.g. Flight SQ-931, Terminal 2' : 'e.g. Grand Hyatt Villa Room 402'}
-                          value={pickupDetail}
-                          onChange={(e) => setPickupDetail(e.target.value)}
-                          className="w-full bg-neutral-950 border border-neutral-850 text-white rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        />
-                      )}
+                      <textarea
+                        required
+                        rows={3}
+                        placeholder="Contoh: Hotel Grand Hyatt room 402, jemput di lobby jam 09:00 pagi..."
+                        value={pickupDetail}
+                        onChange={(e) => setPickupDetail(e.target.value)}
+                        className="w-full bg-neutral-950 border border-neutral-850 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500/50"
+                      />
                     </div>
                   </div>
 
-                  {/* Return location method */}
-                  <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4">
-                    <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                      <Building className="h-5 w-5 text-amber-500" />
-                      <span>Drop-off Return Method</span>
-                    </h3>
-                    
-                    <div className="grid grid-cols-3 gap-3 text-xs">
-                      {['office', 'airport', 'hotel'].map((type) => (
-                        <div
-                          key={type}
-                          onClick={() => {
-                            setDropoffType(type as any);
-                            setDropoffDetail('');
-                          }}
-                          className={`p-3 rounded-xl border text-center cursor-pointer transition-all ${
-                            dropoffType === type
-                              ? 'bg-amber-500/10 border-amber-500 text-amber-400'
-                              : 'bg-neutral-950 border-neutral-850 text-neutral-400 hover:border-neutral-700'
-                          }`}
-                        >
-                          <span className="font-bold capitalize">{type}</span>
-                        </div>
-                      ))}
-                    </div>
 
-                    <div className="space-y-1.5">
-                      <label className="block text-xs font-bold text-neutral-400">
-                        {dropoffType === 'office' ? 'Choose Free Office Depot' : dropoffType === 'airport' ? 'Airport Departure Flight Code' : 'Hotel Retrieval Street Address'}
-                      </label>
-                      {dropoffType === 'office' ? (
-                        <select
-                          value={dropoffDetail}
-                          onChange={(e) => setDropoffDetail(e.target.value)}
-                          className="w-full bg-neutral-950 border border-neutral-850 text-white rounded-xl px-4 py-3 text-sm font-semibold"
-                        >
-                          <option value="">-- Choose Free Depot --</option>
-                          <option value="Sawah Jaya HQ Main Office">Sawah Jaya HQ Main Office</option>
-                          <option value="Town Center Station Office">Town Center Station Office</option>
-                        </select>
-                      ) : (
-                        <input
-                          type="text"
-                          required
-                          placeholder={dropoffType === 'airport' ? 'e.g. Flight GA-291 Departure' : 'e.g. Aston Inn Batu Reception desk'}
-                          value={dropoffDetail}
-                          onChange={(e) => setDropoffDetail(e.target.value)}
-                          className="w-full bg-neutral-950 border border-neutral-850 text-white rounded-xl px-4 py-3 text-sm focus:outline-none"
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Traveloka Rental Requirements Checklist */}
-                  <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4">
-                    <h3 className="text-base font-extrabold text-white flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-amber-500" />
-                      <span>Rental Requirements Verification (Persyaratan Sewa)</span>
-                    </h3>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      To ensure seamless car handover, you must verify that you can supply the required credentials upon pickup:
-                    </p>
-
-                    <div className="space-y-3 pt-2 text-xs">
-                      <div className="flex items-start gap-3 bg-neutral-950 p-3 rounded-xl border border-neutral-850">
-                        <CheckCircle2 className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
-                        <span>National ID Card (KTP) or Passport matching lead passenger.</span>
-                      </div>
-                      
-                      {serviceType === 'without_driver' ? (
-                        <>
-                          <div className="flex items-start gap-3 bg-neutral-950 p-3 rounded-xl border border-neutral-850">
-                            <CheckCircle2 className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
-                            <span>Valid National Driver's License (SIM A) or International driving permit.</span>
-                          </div>
-                          <div className="flex items-start gap-3 bg-neutral-950 p-3 rounded-xl border border-neutral-850">
-                            <CheckCircle2 className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
-                            <span>Valid Credit Card or Refundable Cash Security deposit.</span>
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex items-start gap-3 bg-neutral-950 p-3 rounded-xl border border-neutral-850">
-                          <CheckCircle2 className="h-4.5 w-4.5 text-amber-500 shrink-0 mt-0.5" />
-                          <span>Active WhatsApp mobile phone number for Driver coordination.</span>
-                        </div>
-                      )}
-
-                      <div
-                        onClick={() => setVerificationAccepted(!verificationAccepted)}
-                        className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
-                          verificationAccepted
-                            ? 'bg-amber-500/15 border-amber-500 text-white'
-                            : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'
-                        }`}
-                      >
-                        <div className={`h-4.5 w-4.5 rounded border flex items-center justify-center ${verificationAccepted ? 'bg-amber-500 border-amber-500 text-neutral-950' : 'border-neutral-600'}`}>
-                          {verificationAccepted && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-                        </div>
-                        <span className="font-extrabold">I can provide all required verification documents upon pickup.</span>
-                      </div>
-                    </div>
-                  </div>
 
                   {/* Optional Add-ons */}
                   <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4">
@@ -1566,7 +1522,7 @@ export default function CarRentalView() {
                     />
                   </div>
 
-                  {/* Sawah Jaya Terms accepted */}
+                  {/* Smart Journey Terms accepted */}
                   <div
                     onClick={() => setPolicyAccepted(!policyAccepted)}
                     className={`p-4 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
@@ -1578,7 +1534,7 @@ export default function CarRentalView() {
                     <div className={`h-4.5 w-4.5 rounded border flex items-center justify-center ${policyAccepted ? 'bg-amber-500 border-amber-500 text-neutral-950' : 'border-neutral-600'}`}>
                       {policyAccepted && <Check className="h-3.5 w-3.5 stroke-[3]" />}
                     </div>
-                    <span className="text-xs font-bold">I agree to the Traveloka Car Rental Policies and Sawah Jaya Terms of Service.</span>
+                    <span className="text-xs font-bold">I agree to the Traveloka Car Rental Policies and Smart Journey Terms of Service.</span>
                   </div>
 
                   {/* Submission buttons */}
@@ -1661,36 +1617,40 @@ export default function CarRentalView() {
                   {/* Main specs table */}
                   <div className="grid grid-cols-2 gap-y-4 gap-x-6 border-b border-neutral-850 pb-5">
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Rental Category</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Kategori Mobil</span>
                       <span className="text-neutral-200 font-extrabold">{selectedVehicle.categoryName} Class</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Rental Period</span>
-                      <span className="text-neutral-200 font-extrabold">{durationDays} Day{durationDays > 1 ? 's' : ''} contract</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Durasi Sewa</span>
+                      <span className="text-neutral-200 font-extrabold">{durationDays} Hari ({pickupDate} s/d {returnDate})</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Pick-up Location &amp; Time</span>
-                      <span className="text-neutral-200 font-extrabold">{pickupLocation} @ {pickupDate} {pickupTime}</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Lokasi Mulai Sewa</span>
+                      <span className="text-neutral-200 font-extrabold">{pickupLocation} @ {pickupTime}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Drop-off Location &amp; Time</span>
-                      <span className="text-neutral-200 font-extrabold">{dropoffLocation} @ {returnDate} {returnTime}</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Lokasi Tujuan Paling Jauh</span>
+                      <span className="text-neutral-200 font-extrabold">{dropoffLocation}</span>
+                    </div>
+                    <div className="col-span-2 bg-neutral-950/50 p-3.5 rounded-xl border border-neutral-850/50">
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block mb-1">Detail Alamat Penjemputan</span>
+                      <span className="text-neutral-200 font-semibold block break-words whitespace-pre-wrap">{pickupDetail}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Lead Passenger Name</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Nama Kontak Pemesan</span>
                       <span className="text-neutral-200 font-extrabold">{customerName} ({nationality})</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Driver Details</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Detail Pengemudi</span>
                       <span className="text-neutral-200 font-extrabold">
-                        {isDriverSameAsContact ? `${customerName} (Lead)` : `${driverName}`}
+                        {isDriverSameAsContact ? `${customerName} (Sama)` : `${driverName}`}
                       </span>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Verification status</span>
+                      <span className="text-[10px] text-neutral-500 font-bold uppercase block">Status Verifikasi</span>
                       <span className="text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span>All document verification requirements agreed</span>
+                        <span>Persyaratan dokumen verifikasi sewa telah disetujui</span>
                       </span>
                     </div>
                   </div>

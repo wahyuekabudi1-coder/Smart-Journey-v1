@@ -5,6 +5,7 @@ import { Clock, Star, MapPin, Calendar, Users, Sparkles, HelpCircle, ChevronDown
 import CheckoutModal from '../components/CheckoutModal';
 import TourDetailView from './TourDetailView';
 import { motion, AnimatePresence } from 'motion/react';
+import ComingSoonPage from '../components/ComingSoonPage';
 
 export const DURATION_FILTERS = [
   { id: 'all', label: 'Semua Durasi', days: null },

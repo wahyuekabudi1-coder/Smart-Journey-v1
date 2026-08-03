@@ -60,7 +60,7 @@ export default function TermsModal() {
                 <Sparkles className="h-3 w-3" /> Regulasi &amp; Standardisasi Layanan
               </span>
               <p>
-                Selamat datang di <strong>Sawah Jaya Trans</strong>. Syarat &amp; Ketentuan ("Ketentuan") ini mengatur akses dan penggunaan situs web Sawah Jaya Trans serta seluruh layanan jasa perjalanan yang disediakan oleh Sawah Jaya Trans, termasuk namun tidak terbatas pada Paket Wisata, Antar Jemput Bandara, Taksi Eksekutif, dan Sewa Mobil.
+                Selamat datang di <strong>Smart Journey</strong>. Syarat &amp; Ketentuan ("Ketentuan") ini mengatur akses dan penggunaan situs web Smart Journey serta seluruh layanan jasa perjalanan yang disediakan oleh Smart Journey, termasuk namun tidak terbatas pada Paket Wisata, Antar Jemput Bandara, Taksi Eksekutif, dan Sewa Mobil.
               </p>
               <p className="text-xs text-slate-400 italic">
                 Dengan mengakses situs web kami, melakukan reservasi, atau menggunakan layanan kami, Anda menyatakan telah membaca, memahami, dan menyetujui untuk terikat secara hukum oleh Syarat &amp; Ketentuan ini.
@@ -75,7 +75,7 @@ export default function TermsModal() {
                 <h3 className="text-white font-bold text-base">1. Definisi (Definitions)</h3>
                 <p>Dalam Syarat &amp; Ketentuan ini, istilah-istilah berikut memiliki arti:</p>
                 <ul className="space-y-2 text-xs pt-1">
-                  <li><strong>Perusahaan / Kami:</strong> Merujuk kepada Sawah Jaya Trans selaku operator perjalanan resmi.</li>
+                  <li><strong>Perusahaan / Kami:</strong> Merujuk kepada Smart Journey selaku operator perjalanan resmi.</li>
                   <li><strong>Pelanggan / Anda:</strong> Pengguna layanan, pemesan jasa, atau pengunjung situs web kami.</li>
                   <li><strong>Layanan:</strong> Meliputi Paket Wisata, Antar Jemput Bandara, Layanan Taksi, Sewa Mobil, dan layanan terkait perjalanan lainnya.</li>
                   <li><strong>Pemesanan (Booking):</strong> Setiap reservasi formal yang dilakukan melalui situs web, WhatsApp, email, atau jalur komunikasi resmi kami.</li>
@@ -260,7 +260,7 @@ export default function TermsModal() {
               <div className="space-y-2 border-l-2 border-amber-500 pl-4">
                 <h3 className="text-white font-bold text-base">21. Perubahan Ketentuan ini (Changes to Terms)</h3>
                 <p>
-                  Sawah Jaya Trans berhak mengubah, memperbarui, atau merevisi Syarat &amp; Ketentuan ini sewaktu-waktu tanpa persetujuan awal pelanggan. Dokumen terbaru yang diterbitkan di halaman ini dengan tanggal pembaruan terkini akan langsung berlaku efektif. Keberlanjutan penggunaan layanan kami setelah perubahan tersebut dipublikasikan dianggap sebagai persetujuan Anda terhadap dokumen revisi baru tersebut.
+                  Smart Journey berhak mengubah, memperbarui, atau merevisi Syarat &amp; Ketentuan ini sewaktu-waktu tanpa persetujuan awal pelanggan. Dokumen terbaru yang diterbitkan di halaman ini dengan tanggal pembaruan terkini akan langsung berlaku efektif. Keberlanjutan penggunaan layanan kami setelah perubahan tersebut dipublikasikan dianggap sebagai persetujuan Anda terhadap dokumen revisi baru tersebut.
                 </p>
               </div>
 
@@ -273,7 +273,7 @@ export default function TermsModal() {
                 
                 <div className="bg-slate-950 rounded-2xl p-4 border border-slate-800 space-y-3.5 text-xs">
                   <div className="text-slate-200 font-extrabold text-sm uppercase tracking-wider font-mono text-amber-400">
-                    Sawah Jaya Trans Customer Care
+                    Smart Journey Customer Care
                   </div>
                   <div className="space-y-2.5">
                     <div className="flex items-center gap-2.5 text-slate-300">

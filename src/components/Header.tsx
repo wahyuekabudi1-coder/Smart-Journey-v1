@@ -8,7 +8,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [logoState, setLogoState] = useState<'png' | 'fallback'>('png');
+  const [imageFailed, setImageFailed] = useState(false);
 
   // Monitor scroll to trigger header background blur
   useEffect(() => {
@@ -45,16 +45,14 @@ export default function Header() {
           <div
             id="brand-logo"
             onClick={() => handleNavigate('home')}
-            className="flex items-center space-x-2 cursor-pointer group"
+            className="flex items-center space-x-2.5 cursor-pointer group"
           >
-            {logoState !== 'fallback' ? (
+            {!imageFailed ? (
               <img 
                 src="/logo.png" 
-                alt="Logo" 
-                className="h-11 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform duration-300"
-                onError={() => {
-                  setLogoState('fallback');
-                }}
+                alt="Smart Journey Logo" 
+                className="h-10 sm:h-11 w-auto max-w-[180px] object-contain group-hover:scale-105 transition-transform duration-300"
+                onError={() => setImageFailed(true)}
               />
             ) : (
               <div className="bg-amber-500 text-neutral-950 p-2 rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
@@ -63,7 +61,7 @@ export default function Header() {
             )}
             <div>
               <span className="text-xl font-bold tracking-tight text-neutral-900 group-hover:text-amber-600 transition-colors duration-200">
-                Sawah Jaya<span className="text-amber-500"> Trans</span>
+                Smart<span className="text-amber-500"> Journey</span>
               </span>
             </div>
           </div>
@@ -108,13 +106,15 @@ export default function Header() {
                     transition={{ duration: 0.15 }}
                     className="absolute left-0 mt-2 w-56 rounded-2xl bg-white border border-neutral-200 shadow-xl py-2 overflow-hidden"
                   >
-                    <button
+                     <button
                       onClick={() => handleNavigate('tours')}
                       className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
                     >
-                      <Compass className="h-4 w-4 text-amber-500" />
+                      <Compass className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
-                        <div className="text-sm font-semibold">Tour</div>
+                        <div className="text-sm font-semibold">
+                          <span>Tour</span>
+                        </div>
                         <div className="text-[10px] text-neutral-500">Bromo, Ijen, Waterfalls</div>
                       </div>
                     </button>
@@ -122,9 +122,12 @@ export default function Header() {
                       onClick={() => handleNavigate('airport')}
                       className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
                     >
-                      <Plane className="h-4 w-4 text-amber-500" />
+                      <Plane className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
-                        <div className="text-sm font-semibold">Airport transfer</div>
+                        <div className="text-sm font-semibold flex items-center gap-1.5">
+                          <span>Airport transfer</span>
+                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                        </div>
                         <div className="text-[10px] text-neutral-500">SUB, DPS, YIA, CGK</div>
                       </div>
                     </button>
@@ -132,9 +135,12 @@ export default function Header() {
                       onClick={() => handleNavigate('taxi')}
                       className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
                     >
-                      <Route className="h-4 w-4 text-amber-500" />
+                      <Route className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
-                        <div className="text-sm font-semibold">Taxi service</div>
+                        <div className="text-sm font-semibold flex items-center gap-1.5">
+                          <span>Taxi service</span>
+                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                        </div>
                         <div className="text-[10px] text-neutral-500">Point-to-point flat fare</div>
                       </div>
                     </button>
@@ -144,7 +150,10 @@ export default function Header() {
                     >
                       <Car className="h-4 w-4 text-amber-500" />
                       <div>
-                        <div className="text-sm font-semibold">Car rental</div>
+                        <div className="text-sm font-semibold flex items-center gap-1.5">
+                          <span>Car rental</span>
+                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                        </div>
                         <div className="text-[10px] text-neutral-500">Hourly & daily car hire</div>
                       </div>
                     </button>
@@ -237,31 +246,42 @@ export default function Header() {
                 </div>
                 <button
                   onClick={() => handleNavigate('tours')}
-                  className="flex items-center space-x-3 w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50"
+                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
                 >
-                  <Compass className="h-4 w-4 text-amber-500" />
-                  <span>Tour</span>
+                  <div className="flex items-center space-x-3">
+                    <Compass className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span>Tour</span>
+                  </div>
                 </button>
                 <button
                   onClick={() => handleNavigate('airport')}
-                  className="flex items-center space-x-3 w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50"
+                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
                 >
-                  <Plane className="h-4 w-4 text-amber-500" />
-                  <span>Airport transfer</span>
+                  <div className="flex items-center space-x-3">
+                    <Plane className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span>Airport transfer</span>
+                  </div>
+                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
                 <button
                   onClick={() => handleNavigate('taxi')}
-                  className="flex items-center space-x-3 w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50"
+                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
                 >
-                  <Route className="h-4 w-4 text-amber-500" />
-                  <span>Taxi service</span>
+                  <div className="flex items-center space-x-3">
+                    <Route className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span>Taxi service</span>
+                  </div>
+                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
                 <button
                   onClick={() => handleNavigate('car-rental')}
-                  className="flex items-center space-x-3 w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50"
+                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
                 >
-                  <Car className="h-4 w-4 text-amber-500" />
-                  <span>Car rental</span>
+                  <div className="flex items-center space-x-3">
+                    <Car className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span>Car rental</span>
+                  </div>
+                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
               </div>
 

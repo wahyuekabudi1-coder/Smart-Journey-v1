@@ -490,8 +490,8 @@ export default function RentalAdminWorkspace({
     const zonesList = [
       { 
         code: 'Zone 0' as const, 
-        name: 'Zone 0 (Base City Area)', 
-        desc: 'Area Pusat Kota / Layanan Dasar (Tanpa surcharge rute dasar)',
+        name: 'Zona Nol (Kota Malang & 5 Kecamatan)', 
+        desc: 'Zona Nol mencakup seluruh wilayah administratif Kota Malang beserta lima kecamatannya (Klojen, Blimbing, Lowokwaru, Sukun, Kedungkandang) tanpa biaya surcharge.',
         color: 'from-emerald-500/10 to-teal-500/5', 
         border: 'border-emerald-500/20',
         text: 'text-emerald-400',
@@ -499,8 +499,8 @@ export default function RentalAdminWorkspace({
       },
       { 
         code: 'Zone 1' as const, 
-        name: 'Zone 1 (Medium Distance / Suburban)', 
-        desc: 'Area Jarak Menengah / Sub-urban (Berlaku surcharge menengah)',
+        name: 'Zona Satu (Kabupaten Malang & Kota Batu)', 
+        desc: 'Zona Satu mencakup seluruh wilayah di luar Kota Malang, yaitu kecamatan-kecamatan yang berada di wilayah administratif Kabupaten Malang (seperti Singosari, Karangploso, Dau, Kepanjen, dll) beserta wilayah administratif Kota Batu.',
         color: 'from-amber-500/10 to-orange-500/5', 
         border: 'border-amber-500/20',
         text: 'text-amber-400',
@@ -508,8 +508,8 @@ export default function RentalAdminWorkspace({
       },
       { 
         code: 'Zone 2' as const, 
-        name: 'Zone 2 (Far Distance / Remote / Out of Town)', 
-        desc: 'Area Jarak Jauh / Terpencil / Luar Kota (Berlaku surcharge maksimal)',
+        name: 'Zona Dua (Kabupaten Tetangga / Luar Malang)', 
+        desc: 'Zona Dua mencakup wilayah di luar Kota dan Kabupaten Malang, yaitu Kabupaten Lumajang, Kabupaten Kediri, Kabupaten Blitar, Kabupaten Probolinggo, dan Kabupaten Pasuruan (berlaku surcharge tarif penuh).',
         color: 'from-rose-500/10 to-pink-500/5', 
         border: 'border-rose-500/20',
         text: 'text-rose-400',

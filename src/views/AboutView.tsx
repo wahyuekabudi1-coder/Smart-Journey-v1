@@ -299,11 +299,11 @@ export default function AboutView() {
           <div className="max-w-2xl space-y-6">
             <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-400 font-extrabold uppercase tracking-widest font-mono text-[10px] sm:text-xs px-3.5 py-1.5 rounded-full border border-amber-500/20">
               <Sparkles className="h-3 w-3" />
-              <span>Sawah Jaya Trans Premier</span>
+              <span>Smart Journey Premier</span>
             </span>
             <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none text-white uppercase">
               ABOUT <br />
-              <span className="text-amber-500">SAWAH JAYA TRANS</span>
+              <span className="text-amber-500">SMART JOURNEY</span>
             </h1>
             <p className="text-sm sm:text-lg text-slate-300 leading-relaxed font-medium">
               Trusted by thousands of travelers from around the world.
